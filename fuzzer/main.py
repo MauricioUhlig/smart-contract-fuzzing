@@ -16,6 +16,9 @@ from z3 import Solver
 from evm import InstrumentedEVM
 from detectors import DetectorExecutor
 from engine import EvolutionaryFuzzingEngine
+from engine.pso_engine import ParticleSwarmEngine
+from engine.collaborative_engine import CollaborativeEngine
+from engine.pyswarms_engine import PySwarmsEngine
 from engine.components import Generator, Individual, Population
 from engine.analysis import SymbolicTaintAnalyzer
 from engine.analysis import ExecutionTraceAnalyzer
@@ -144,25 +147,75 @@ class Fuzzer:
                                 indv_generator=generator,
                                 size=settings.POPULATION_SIZE if settings.POPULATION_SIZE else size).init()
 
-        # Create genetic operators
-        if self.args.data_dependency:
-            selection = DataDependencyLinearRankingSelection(env=self.env)
-            crossover = DataDependencyCrossover(pc=settings.PROBABILITY_CROSSOVER, env=self.env)
-            mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
+        if self.args.algorithm == 'pso':
+            # Create PSO engine
+            engine = ParticleSwarmEngine(
+                population=population,
+                mapping=get_function_signature_mapping(self.env.abi),
+                w=self.args.pso_w,
+                c1=self.args.pso_c1,
+                c2=self.args.pso_c2
+            )
+            logger.info("Using Particle Swarm Optimization (w=%.2f, c1=%.2f, c2=%.2f)", 
+                       self.args.pso_w, self.args.pso_c1, self.args.pso_c2)
+        elif self.args.algorithm == 'pyswarms':
+            # Create PySwarms engine
+            options = {
+                'c1': self.args.pyswarms_c1,
+                'c2': self.args.pyswarms_c2,
+                'w': self.args.pyswarms_w
+            }
+            engine = PySwarmsEngine(
+                population=population,
+                mapping=get_function_signature_mapping(self.env.abi),
+                optimizer_type=self.args.pyswarms_optimizer,
+                topology=self.args.pyswarms_topology,
+                options=options
+            )
+            logger.info("Using PySwarms %s optimizer (w=%.2f, c1=%.2f, c2=%.2f, topology=%s)", 
+                       self.args.pyswarms_optimizer, 
+                       self.args.pyswarms_w, 
+                       self.args.pyswarms_c1, 
+                       self.args.pyswarms_c2,
+                       self.args.pyswarms_topology)
+        elif self.args.algorithm == 'collaborative':
+            # Create Collaborative Diversity Engine
+            engine = CollaborativeEngine(
+                population=population,
+                generator=generator,
+                args=self.args
+            )
+            logger.info("Using Collaborative Diversity Engine (diversity_weight=%.2f, novelty_threshold=%.2f)", 
+                       self.args.diversity_weight, self.args.novelty_threshold)
         else:
-            selection = LinearRankingSelection()
-            crossover = Crossover(pc=settings.PROBABILITY_CROSSOVER)
-            mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
+            # Create genetic operators for GA
+            if self.args.data_dependency:
+                selection = DataDependencyLinearRankingSelection(env=self.env)
+                crossover = DataDependencyCrossover(pc=settings.PROBABILITY_CROSSOVER, env=self.env)
+                mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
+            else:
+                selection = LinearRankingSelection()
+                crossover = Crossover(pc=settings.PROBABILITY_CROSSOVER)
+                mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
 
-        # Create and run our evolutionary fuzzing engine
-        engine = EvolutionaryFuzzingEngine(population=population, selection=selection, crossover=crossover, mutation=mutation, mapping=get_function_signature_mapping(self.env.abi))
+            # Create and run evolutionary fuzzing engine (GA)
+            engine = EvolutionaryFuzzingEngine(
+                population=population,
+                selection=selection,
+                crossover=crossover,
+                mutation=mutation,
+                mapping=get_function_signature_mapping(self.env.abi)
+            )
+            logger.info("Using Genetic Algorithm")
+
         engine.fitness_register(lambda x: fitness_function(x, self.env))
         engine.analysis.append(ExecutionTraceAnalyzer(self.env))
-
         self.env.execution_begin = time.time()
         self.env.population = population
-
-        engine.run(ng=settings.GENERATIONS)
+        if self.args.algorithm == 'collaborative':
+            engine.run(self.env, ng=settings.GENERATIONS)
+        else:
+            engine.run(ng=settings.GENERATIONS)
 
         if self.env.args.cfg:
             if self.env.args.source:
@@ -263,6 +316,46 @@ def launch_argument_parser():
     parser.add_argument("--evm", help="Ethereum VM (default '" + str(
         settings.EVM_VERSION) + "'). Available VM's: 'homestead', 'byzantium' or 'petersburg'.", action="store",
                         dest="evm_version", type=str)
+
+    parser.add_argument("--algorithm", 
+                        help="Optimization algorithm: 'ga' (Genetic Algorithm, default), 'pso' (custom PSO), 'pyswarms' (PySwarms library), or 'collaborative' (Collaborative Diversity).",
+                        action="store", dest="algorithm", type=str, default="ga", 
+                        choices=['ga', 'pso', 'pyswarms', 'collaborative'])
+    
+    parser.add_argument("--pso-w", 
+                        help="PSO inertia weight (default 0.7).",
+                        action="store", dest="pso_w", type=float, default=0.7)
+    parser.add_argument("--pso-c1", 
+                        help="PSO cognitive coefficient (default 1.5).",
+                        action="store", dest="pso_c1", type=float, default=1.5)
+    parser.add_argument("--pso-c2", 
+                        help="PSO social coefficient (default 1.5).",
+                        action="store", dest="pso_c2", type=float, default=1.5)
+    
+    parser.add_argument("--pyswarms-optimizer", 
+                        help="PySwarms optimizer type: 'global' (GlobalBestPSO, default) or 'local' (LocalBestPSO).",
+                        action="store", dest="pyswarms_optimizer", type=str, default="global",
+                        choices=['global', 'local'])
+    parser.add_argument("--pyswarms-topology", 
+                        help="PySwarms topology for LocalBestPSO: 'star' (default), 'ring', 'pyramid', or 'random'.",
+                        action="store", dest="pyswarms_topology", type=str, default="star",
+                        choices=['star', 'ring', 'pyramid', 'random'])
+    parser.add_argument("--pyswarms-w", 
+                        help="PySwarms inertia weight (default 0.7).",
+                        action="store", dest="pyswarms_w", type=float, default=0.7)
+    parser.add_argument("--pyswarms-c1", 
+                        help="PySwarms cognitive coefficient (default 1.5).",
+                        action="store", dest="pyswarms_c1", type=float, default=1.5)
+    parser.add_argument("--pyswarms-c2", 
+                        help="PySwarms social coefficient (default 1.5).",
+                        action="store", dest="pyswarms_c2", type=float, default=1.5)
+    
+    parser.add_argument("--diversity-weight", 
+                        help="Collaborative: Weight for diversity in fitness (default 0.3).",
+                        action="store", dest="diversity_weight", type=float, default=0.3)
+    parser.add_argument("--novelty-threshold", 
+                        help="Collaborative: Threshold for novelty in archive (default 0.5).",
+                        action="store", dest="novelty_threshold", type=float, default=0.5)
 
     # Evolutionary parameters
     group3 = parser.add_mutually_exclusive_group(required=False)
