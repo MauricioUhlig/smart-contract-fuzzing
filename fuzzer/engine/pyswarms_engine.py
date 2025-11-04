@@ -18,7 +18,6 @@ import os
 
 # PySwarms imports
 import pyswarms as ps
-from pyswarms.backend.topology import Star, Ring, Pyramid, Random as RandomTopology
 from pyswarms.utils.functions import single_obj as fx
 
 from utils import settings
@@ -102,7 +101,7 @@ class PySwarmsEngine(object):
                                      StatVar('ori_fmean'))
 
     def __init__(self, population, fitness=None, analysis=None, mapping=None,
-                 optimizer_type='global', topology='star',
+                 optimizer_type='global',
                  options=None):
         '''
         Initialize PySwarms-based optimization engine.
@@ -112,7 +111,6 @@ class PySwarmsEngine(object):
         :param analysis: Analysis plugins
         :param mapping: Function signature mapping
         :param optimizer_type: Type of PSO optimizer ('global', 'local')
-        :param topology: Topology for local PSO ('star', 'ring', 'pyramid', 'random')
         :param options: Dictionary of PSO hyperparameters
                        {'c1': cognitive, 'c2': social, 'w': inertia}
         '''
@@ -128,11 +126,11 @@ class PySwarmsEngine(object):
 
         # PySwarms configuration
         self.optimizer_type = optimizer_type
-        self.topology_type = topology
+
         
         # Default PSO hyperparameters
         if options is None:
-            self.options = {'c1': 1.5, 'c2': 1.5, 'w': 0.7}
+            self.options = {'c1': 1.5, 'c2': 1.5, 'w': 0.7, 'k': 5, 'p': 1}
         else:
             self.options = options
 
@@ -155,6 +153,9 @@ class PySwarmsEngine(object):
 
         # Check parameters validity.
         self._check_parameters()
+
+        # generation counter
+        self.ng = self._counter_generator()
 
     @do_profile(filename='pyswarms_engine_run.prof')
     def run(self, ng):
@@ -187,14 +188,27 @@ class PySwarmsEngine(object):
                 Converts continuous positions to discrete individuals and evaluates fitness.
                 
                 :param positions: numpy array of shape (n_particles, dimensions)
+                :param ng: number of current generation
                 :return: numpy array of fitness values (negated for minimization)
                 '''
                 fitness_values = np.zeros(positions.shape[0])
                 
-                for i, position in enumerate(positions):
+                individuals = []
+                for position in positions:
                     # Decode position to individual
                     individual = self._decode_position(position)
                     
+                    individuals.append(individual)
+
+                # May be wrong
+                self.population.init(individuals)
+            
+                current_count = next(self.ng)
+                # Final analysis
+                for a in self.analysis:
+                    a.register_step(g=current_count, population=self.population, engine=self)
+
+                for i, individual in enumerate(individuals):
                     # Evaluate fitness (negate because PySwarms minimizes)
                     fitness_val = self.fitness(individual)
                     fitness_values[i] = -fitness_val  # Negate for minimization
@@ -206,11 +220,7 @@ class PySwarmsEngine(object):
             cost, pos = self.optimizer.optimize(objective_function, iters=ng)
 
             # Update population with final best positions
-            self._update_population_from_optimizer()
-
-            # Final analysis
-            for a in self.analysis:
-                a.register_step(g=ng-1, population=self.population, engine=self)
+            self._update_population_from_optimizer(pos)
 
             self.logger.info("PySwarms optimization completed. Best cost: %f", cost)
 
@@ -270,38 +280,15 @@ class PySwarmsEngine(object):
             self.logger.info("Created GlobalBestPSO optimizer")
             
         elif self.optimizer_type == 'local':
-            # Local best PSO with topology
-            topology = self._get_topology()
-            
             self.optimizer = ps.single.LocalBestPSO(
                 n_particles=n_particles,
                 dimensions=dimensions,
                 options=self.options,
-                bounds=self.bounds,
-                topology=topology
+                bounds=self.bounds
             )
-            self.logger.info("Created LocalBestPSO optimizer with %s topology", 
-                           self.topology_type)
+            self.logger.info("Created LocalBestPSO optimizer")
         else:
             raise ValueError(f"Unknown optimizer type: {self.optimizer_type}")
-
-    def _get_topology(self):
-        '''
-        Get the topology object for LocalBestPSO.
-        
-        :return: PySwarms topology object
-        '''
-        if self.topology_type == 'star':
-            return Star()
-        elif self.topology_type == 'ring':
-            return Ring()
-        elif self.topology_type == 'pyramid':
-            return Pyramid()
-        elif self.topology_type == 'random':
-            return RandomTopology()
-        else:
-            self.logger.warning("Unknown topology %s, using Star", self.topology_type)
-            return Star()
 
     def _encode_individual(self, individual):
         '''
@@ -386,21 +373,16 @@ class PySwarmsEngine(object):
         individual.init(chromosome=chromosome)
         return individual
 
-    def _update_population_from_optimizer(self):
+    def _update_population_from_optimizer(self, best):
         '''
         Update the population with individuals decoded from optimizer's final positions.
         '''
-        if self.optimizer is None:
-            return
-        
-        # Get final positions from optimizer
-        final_positions = self.optimizer.pos
         
         # Decode each position to an individual
         new_individuals = []
-        for position in final_positions:
-            individual = self._decode_position(position)
-            new_individuals.append(individual)
+    
+        individual = self._decode_position(best)
+        new_individuals.append(individual)
         
         self.population.individuals = new_individuals
         self.logger.info("Updated population from optimizer's final positions")
@@ -478,3 +460,10 @@ class PySwarmsEngine(object):
         def _minimize(indv):
             return -fn(indv)
         return _minimize
+
+    def _counter_generator(self):
+        count = -1
+        while True:
+            count += 1
+            yield count
+

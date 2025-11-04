@@ -125,7 +125,7 @@ class CollaborativeEngine:
             gen_start = time.time()
             
             # Execute all individuals and collect results
-            self._execute_population()
+            self._execute_population(generation)
             
             # Calculate collaborative fitness (individual + population-based)
             fitness_scores = self._calculate_collaborative_fitness(env)
@@ -184,13 +184,13 @@ class CollaborativeEngine:
         
         return self.population
     
-    def _execute_population(self):
+    def _execute_population(self, generation):
         """Execute all individuals in the population"""
         if hasattr(self, 'analysis') and self.analysis:
             for analyzer in self.analysis:
                 if hasattr(analyzer, 'env'):
                     # Execute the transaction to populate coverage
-                    analyzer.register_step(g=-1, population=self.population, engine=self)
+                    analyzer.register_step(g=generation, population=self.population, engine=self)
     
     def _calculate_collaborative_fitness(self, env):
         """
@@ -225,6 +225,7 @@ class CollaborativeEngine:
     def _calculate_unique_contribution(self, individual, env):
         """Calculate how many unique branches this individual covers"""
         if individual.hash not in env.individual_branches:
+            print("not in!")
             return 0.0
         
         individual_branches = set()

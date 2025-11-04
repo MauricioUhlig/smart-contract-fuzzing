@@ -163,21 +163,23 @@ class Fuzzer:
             options = {
                 'c1': self.args.pyswarms_c1,
                 'c2': self.args.pyswarms_c2,
-                'w': self.args.pyswarms_w
+                'w': self.args.pyswarms_w,
+                'k': self.args.pyswarms_k,
+                'p': self.args.pyswarms_p,
             }
             engine = PySwarmsEngine(
                 population=population,
                 mapping=get_function_signature_mapping(self.env.abi),
                 optimizer_type=self.args.pyswarms_optimizer,
-                topology=self.args.pyswarms_topology,
                 options=options
             )
-            logger.info("Using PySwarms %s optimizer (w=%.2f, c1=%.2f, c2=%.2f, topology=%s)", 
+            logger.info("Using PySwarms %s optimizer (w=%.2f, c1=%.2f, c2=%.2f, k=%d, p=%d)", 
                        self.args.pyswarms_optimizer, 
                        self.args.pyswarms_w, 
                        self.args.pyswarms_c1, 
                        self.args.pyswarms_c2,
-                       self.args.pyswarms_topology)
+                       self.args.pyswarms_k,
+                       self.args.pyswarms_p)
         elif self.args.algorithm == 'collaborative':
             # Create Collaborative Diversity Engine
             engine = CollaborativeEngine(
@@ -336,10 +338,6 @@ def launch_argument_parser():
                         help="PySwarms optimizer type: 'global' (GlobalBestPSO, default) or 'local' (LocalBestPSO).",
                         action="store", dest="pyswarms_optimizer", type=str, default="global",
                         choices=['global', 'local'])
-    parser.add_argument("--pyswarms-topology", 
-                        help="PySwarms topology for LocalBestPSO: 'star' (default), 'ring', 'pyramid', or 'random'.",
-                        action="store", dest="pyswarms_topology", type=str, default="star",
-                        choices=['star', 'ring', 'pyramid', 'random'])
     parser.add_argument("--pyswarms-w", 
                         help="PySwarms inertia weight (default 0.7).",
                         action="store", dest="pyswarms_w", type=float, default=0.7)
@@ -349,7 +347,12 @@ def launch_argument_parser():
     parser.add_argument("--pyswarms-c2", 
                         help="PySwarms social coefficient (default 1.5).",
                         action="store", dest="pyswarms_c2", type=float, default=1.5)
-    
+    parser.add_argument("--pyswarms-k", 
+                        help="PySwarms number of neighbors to be considered. Must be a positive integer less than :code:`n_particles` (default 5)",
+                        action="store", dest="pyswarms_k", type=int, default=5)
+    parser.add_argument("--pyswarms-p", 
+                        help="PySwarms the Minkowski p-norm to use. 1 is the sum-of-absolute values (or L1 distance) while 2 is the Euclidean (or L2) distance (default 1)",
+                        action="store", dest="pyswarms_p", type=int, default=1)
     parser.add_argument("--diversity-weight", 
                         help="Collaborative: Weight for diversity in fitness (default 0.3).",
                         action="store", dest="diversity_weight", type=float, default=0.3)
