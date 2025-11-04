@@ -1,7 +1,4 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -10,7 +7,14 @@
             "request": "launch",
             "program": "${workspaceFolder}/fuzzer/main.py",
             "console": "integratedTerminal",
-            "args": "-s ${workspaceFolder}/examples/RemiCoin/contracts/RemiCoin.sol   -c RemiCoin   --solc v0.4.26   --evm byzantium   -g 20   --algorithm pso"
+            "args": [
+                "--source", "${workspaceFolder}/${input:contractFile}",
+                "-c", "${input:contractName}",
+                "--solc", "v0.4.26",
+                "--evm", "byzantium",
+                "-g", "100",
+                "--algorithm", "pso"
+            ]
         },
         {
             "name": "GA - Original",
@@ -18,7 +22,14 @@
             "request": "launch",
             "program": "${workspaceFolder}/fuzzer/main.py",
             "console": "integratedTerminal",
-            "args": "-s ${workspaceFolder}/examples/RemiCoin/contracts/RemiCoin.sol   -c RemiCoin   --solc v0.4.26   --evm byzantium   -g 20   --algorithm ga"
+            "args": [
+                "--source", "${workspaceFolder}/${input:contractFile}",
+                "-c", "${input:contractName}",
+                "--solc", "v0.4.26",
+                "--evm", "byzantium",
+                "-g", "200",
+                "--algorithm", "ga"
+            ]
         },
         {
             "name": "Collaborative",
@@ -26,7 +37,58 @@
             "request": "launch",
             "program": "${workspaceFolder}/fuzzer/main.py",
             "console": "integratedTerminal",
-            "args": "--source ${workspaceFolder}/examples/RemiCoin/contracts/RemiCoin.sol   --contract RemiCoin   --algorithm collaborative   --generations 20   --population-size 30   --diversity-weight 0.4   --novelty-threshold 0.6   --probability-crossover 0.9   --probability-mutation 0.15   --solc v0.4.26   --evm byzantium"
+            "args": [
+                "--source", "${workspaceFolder}/${input:contractFile}",
+                "--contract", "${input:contractName}",
+                "--algorithm", "collaborative",
+                "--generations", "30",
+                "--population-size", "40",
+                "--diversity-weight", "0.5",
+                "--novelty-threshold", "0.6",
+                "--probability-crossover", "0.8",
+                "--probability-mutation", "0.35",
+                "--solc", "v0.4.26",
+                "--evm", "byzantium"
+            ]
+        },
+        {
+            "name": "Pyswarm",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/fuzzer/main.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--source", "${workspaceFolder}/${input:contractFile}",
+                "--contract", "${input:contractName}",
+                "--algorithm", "pyswarms",
+                "--generations", "100",
+                "--solc", "v0.4.26",
+                "--evm", "byzantium"
+            ]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "contractFile",
+            "type": "pickString",
+            "description": "Select contract file:",
+            "options": [
+                "examples/RemiCoin/contracts/RemiCoin.sol",
+                "examples/TokenSale/contracts/TokenSale.sol",
+                "examples/ILF/contracts/crowdsale.sol"
+            ],
+            "default": "examples/RemiCoin/contracts/RemiCoin.sol"
+        },
+        {
+            "id": "contractName",
+            "type": "pickString",
+            "description": "Enter the contract name:",
+            "options": [
+                "RemiCoin",
+                "TokenSale",
+                "Crowdsale"
+            ],
+            "default": "RemiCoin"
         }
     ]
 }
