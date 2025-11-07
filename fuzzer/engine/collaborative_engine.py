@@ -3,6 +3,8 @@
 
 import pprint
 
+from utils import settings
+
 import random
 import math
 import time
@@ -109,80 +111,91 @@ class CollaborativeEngine:
         
         # Track population diversity over time
         self.diversity_history = []
+
+        # Store current generation number.
+        self.current_generation = -1  # Starts from 0.
         
     def run(self, env, ng):
         """Main evolution loop with collaborative fitness and diversity maintenance"""
         self.logger.info("Starting Collaborative Evolutionary Engine")
         self.logger.info(f"Population size: {self.population.size}, Generations: {ng}")
         self.logger.info(f"Diversity weight: {self.diversity_weight}, Novelty threshold: {self.novelty_threshold}")
-        
-        start_time = time.time()
 
-        if self.fitness is None:
-            raise AttributeError('No fitness function in Collaborative engine')
-        
-        for generation in range(ng):
-            gen_start = time.time()
+        try: 
+            execution_begin = time.time()
+
+            if self.fitness is None:
+                raise AttributeError('No fitness function in Collaborative engine')
+
+            for a in self.analysis:
+                a.setup(ng=ng, engine=self)
+                a.register_step(g=-1, population=self.population, engine=self)
             
-            # Execute all individuals and collect results
-            self._execute_population(generation)
-            
-            # Calculate collaborative fitness (individual + population-based)
-            fitness_scores = self._calculate_collaborative_fitness(env)
-            
-            # Calculate diversity metrics
-            diversity_score = self._calculate_population_diversity()
-            self.diversity_history.append(diversity_score)
-            
-            # Update archive with novel solutions
-            self._update_archive(fitness_scores)
-            
-            # Create new generation using diversity-aware operators
-            new_population = []
-            
-            while len(new_population) < self.population.size:
-                # Diversity-based selection
-                parents = self._diversity_based_selection(fitness_scores)
+             # Enter evolution iteration.
+            g = 0
+            while g < ng or settings.GLOBAL_TIMEOUT:
+                if settings.GLOBAL_TIMEOUT and time.time() - execution_begin >= settings.GLOBAL_TIMEOUT:
+                    break
+                gen_start = time.time()
                 
-                # Enhanced crossover for diversity
-                if random.random() < self.args.probability_crossover:
-                    child1, child2 = self._diversity_crossover(*parents)
-                else:
-                    child1, child2 = [p.clone() for p in parents]
+                self.current_generation = g
+
+                # Execute all individuals and collect results
+                self._execute_population(g)
                 
-                # Diversity-aware mutation
-                child1 = self._diversity_mutation(child1, env)
-                child2 = self._diversity_mutation(child2, env)
+                # Calculate collaborative fitness (individual + population-based)
+                fitness_scores = self._calculate_collaborative_fitness(env)
                 
-                new_population.extend([child1, child2])
-            
-            # Replace population
-            self.population.individuals = new_population[:self.population.size]
-            
-            gen_time = time.time() - gen_start
-            
-            # Logging
-            best_fitness = max(fitness_scores.values())
-            avg_fitness = sum(fitness_scores.values()) / len(fitness_scores)
-            
-            self.logger.info(f"Generation {generation + 1}/{ng} | "
-                           f"Best Fitness: {best_fitness:.2f} | "
-                           f"Avg Fitness: {avg_fitness:.2f} | "
-                           f"Diversity: {diversity_score:.3f} | "
-                           f"Coverage: {len(env.code_coverage)} | "
-                           f"Time: {gen_time:.2f}s")
-            
-            # Check timeout
-            if self.args.global_timeout and (time.time() - start_time) > self.args.global_timeout:
-                self.logger.info("Global timeout reached")
-                break
-        
-        total_time = time.time() - start_time
-        self.logger.info(f"Evolution completed in {total_time:.2f}s")
-        self.logger.info(f"Final coverage: {len(env.code_coverage)} branches")
-        self.logger.info(f"Archive size: {len(self.archive)} diverse solutions")
-        
-        return self.population
+                # Calculate diversity metrics
+                diversity_score = self._calculate_population_diversity()
+                self.diversity_history.append(diversity_score)
+                
+                # Update archive with novel solutions
+                self._update_archive(fitness_scores)
+                
+                # Create new generation using diversity-aware operators
+                new_population = []
+                
+                while len(new_population) < self.population.size:
+                    # Diversity-based selection
+                    parents = self._diversity_based_selection(fitness_scores)
+                    
+                    # Enhanced crossover for diversity
+                    if random.random() < self.args.probability_crossover:
+                        child1, child2 = self._diversity_crossover(*parents)
+                    else:
+                        child1, child2 = [p.clone() for p in parents]
+                    
+                    # Diversity-aware mutation
+                    child1 = self._diversity_mutation(child1, env)
+                    child2 = self._diversity_mutation(child2, env)
+                    
+                    new_population.extend([child1, child2])
+                
+                # Replace population
+                self.population.individuals = new_population[:self.population.size]
+                
+                
+                
+                # Logging
+                best_fitness = max(fitness_scores.values())
+                avg_fitness = sum(fitness_scores.values()) / len(fitness_scores)
+                
+                self.logger.info(f"Generation {g + 1}/{ng} | "
+                            f"Best Fitness: {best_fitness:.2f} | "
+                            f"Avg Fitness: {avg_fitness:.2f} | "
+                            f"Diversity: {diversity_score:.3f}")
+                
+                g += 1
+        except Exception as e:
+            # Log exception info.
+            msg = '{} exception is catched'.format(type(e).__name__)
+            self.logger.exception(msg)
+            raise e
+        finally:
+            # Perform the analysis post processing.
+            for a in self.analysis:
+                a.finalize(population=self.population, engine=self)
     
     def _execute_population(self, generation):
         """Execute all individuals in the population"""

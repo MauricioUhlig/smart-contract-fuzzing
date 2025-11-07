@@ -722,6 +722,8 @@ class ExecutionTraceAnalyzer(OnTheFlyAnalysis):
         msg = 'Total memory consumption: \t {:.2f} MB'.format(psutil.Process(os.getpid()).memory_info().rss/1024/1024)
         self.logger.info(msg)
 
+        self.logger.info(self.print_formatted_vulnerabilities_analysis(self.env.results["errors"]))
+
         # Save to results
         self.env.results["transactions"] = {"total": self.env.nr_of_transactions,
                                             "per_second": self.env.nr_of_transactions / execution_delta}
@@ -761,3 +763,26 @@ class ExecutionTraceAnalyzer(OnTheFlyAnalysis):
 
         diff = list(set(self.env.code_coverage).symmetric_difference(set([hex(x) for x in self.env.overall_pcs])))
         self.logger.debug("Instructions not executed: %s", sorted(diff))
+
+    def print_formatted_vulnerabilities_analysis(self, analysis_data):
+        """
+        Simple version without any external dependencies.
+        """
+        
+        if not analysis_data:
+            return "No analysis data to display."
+        
+        msg = "SECURITY ANALYSIS REPORT"
+        
+        for tx_hash, vulnerabilities in analysis_data.items():
+            msg += f"\n"
+            
+            for i, vuln in enumerate(vulnerabilities, 1):
+                msg += f"  SWC ID:        {vuln.get('swc_id', 'N/A')}"
+                msg += f"  Severity:      {vuln.get('severity', 'N/A')}"
+                msg += f"  Type:          {vuln.get('type', 'N/A')}"
+                msg += f"  Time:          {vuln.get('time', 'N/A'):.6f}s"
+                msg += f"  Line:          {vuln.get('line', 'N/A')}"
+                msg += f"  Code:          {vuln.get('source_code', 'N/A')}"
+
+        return msg
