@@ -235,9 +235,15 @@ def main():
 
     # Check if contract has already been analyzed
     if args.results and os.path.exists(args.results):
-        os.remove(args.results)
-        logger.info("Contract "+str(args.source)+" has already been analyzed: "+str(args.results))
-        sys.exit(0)
+        if args.results.endswith(".json"):
+            resultJson = args.results
+        else:
+            resultJson = args.results + '/' + os.path.splitext(os.path.basename(args.contract))[0] + '.json'
+        
+        if os.path.exists(resultJson):
+            os.remove(resultJson)
+            logger.info("Contract "+str(args.source)+" has already been analyzed: "+str(resultJson))
+            # sys.exit(0)
 
     # Initializing random
     if args.seed:
