@@ -71,6 +71,18 @@
                 "--solc", "v0.4.26",
                 "--evm", "byzantium"
             ]
+        },
+        {
+            "name": "Get contracts from folder",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/utils/solidity_parser.py",
+            "console": "integratedTerminal",
+            "args": [
+                "${workspaceFolder}/${input:folderToExtractContracts}",
+                "--json",
+                "--output", "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}"
+            ]
         }
     ],
     "inputs": [
@@ -95,6 +107,18 @@
                 "Crowdsale"
             ],
             "default": "RemiCoin"
+        },
+        { 
+            "id": "folderToExtractContracts",
+            "type": "promptString",
+            "description": "Folder where to extract contracts:",
+            "default": "examples",
+        },
+        { 
+            "id": "ouputFileToSaveExtractedContracts",
+            "type": "promptString",
+            "description": "Folder where to extract contracts",
+            "default": "utils/result.json",
         }
     ]
 }

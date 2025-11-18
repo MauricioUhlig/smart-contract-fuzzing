@@ -1,0 +1,261 @@
+[
+    {
+        "file": "Harvey/memory-access-vulnerability-fuzzing-example.sol",
+        "contracts": [
+            "Wallet"
+        ]
+    },
+    {
+        "file": "Harvey/input-prediction-fuzzing-example.sol",
+        "contracts": [
+            "Baz"
+        ]
+    },
+    {
+        "file": "Harvey/demand-driven-sequence-fuzzing-example.sol",
+        "contracts": [
+            "Foo"
+        ]
+    },
+    {
+        "file": "Rodler/manual-lock.sol",
+        "contracts": [
+            "VulnBank",
+            "VulnBankNoLock",
+            "VulnBankBuggyLock",
+            "VulnBankSecureLock"
+        ]
+    },
+    {
+        "file": "Rodler/unconditional_reentrancy.sol",
+        "contracts": [
+            "keepMyEther"
+        ]
+    },
+    {
+        "file": "SWC/swc-114/eth_tx_order_dependence_minimal.sol",
+        "contracts": [
+            "EthTxOrderDependenceMinimal"
+        ]
+    },
+    {
+        "file": "SWC/swc-114/ERC20.sol",
+        "contracts": [
+            "ERC20",
+            "SafeMath"
+        ]
+    },
+    {
+        "file": "SWC/swc-101/overflow_simple_add.sol",
+        "contracts": [
+            "Overflow_Add"
+        ]
+    },
+    {
+        "file": "SWC/swc-101/BECToken.sol",
+        "contracts": [
+            "ERC20Basic",
+            "BasicToken",
+            "ERC20",
+            "StandardToken",
+            "Ownable",
+            "Pausable",
+            "PausableToken",
+            "BecToken",
+            "SafeMath"
+        ]
+    },
+    {
+        "file": "SWC/swc-101/integer_overflow_multitx_onefunc_feasible.sol",
+        "contracts": [
+            "IntegerOverflowMultiTxOneFuncFeasible"
+        ]
+    },
+    {
+        "file": "SWC/swc-101/integer_overflow_minimal_fixed.sol",
+        "contracts": [
+            "IntegerOverflowMinimal"
+        ]
+    },
+    {
+        "file": "SWC/swc-101/overflow_simple_add_fixed.sol",
+        "contracts": [
+            "Overflow_Add"
+        ]
+    },
+    {
+        "file": "SWC/swc-101/integer_overflow_mapping_sym_1.sol",
+        "contracts": [
+            "IntegerOverflowMappingSym1"
+        ]
+    },
+    {
+        "file": "SWC/swc-101/integer_overflow_mapping_sym_1_fixed.sol",
+        "contracts": [
+            "IntegerOverflowMappingSym1"
+        ]
+    },
+    {
+        "file": "SWC/swc-101/integer_overflow_minimal.sol",
+        "contracts": [
+            "IntegerOverflowMinimal"
+        ]
+    },
+    {
+        "file": "SWC/swc-112/proxy_fixed.sol",
+        "contracts": [
+            "Proxy"
+        ]
+    },
+    {
+        "file": "SWC/swc-112/proxy.sol",
+        "contracts": [
+            "Proxy"
+        ]
+    },
+    {
+        "file": "SWC/swc-112/proxy_pattern_false_positive.sol",
+        "contracts": [
+            "proxy"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/wallet_01_ok.sol",
+        "contracts": [
+            "Wallet"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/tokensalechallenge.sol",
+        "contracts": [
+            "TokenSaleChallenge"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/wallet_02_refund_nosub.sol",
+        "contracts": [
+            "Wallet"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/multiowned_not_vulnerable.sol",
+        "contracts": [
+            "MultiOwnable",
+            "TestContract"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/wallet_03_wrong_constructor.sol",
+        "contracts": [
+            "Wallet"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/rubixi.sol",
+        "contracts": [
+            "Rubixi"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/simple_ether_drain.sol",
+        "contracts": [
+            "SimpleEtherDrain"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/wallet_04_confused_sign.sol",
+        "contracts": [
+            "Wallet"
+        ]
+    },
+    {
+        "file": "SWC/swc-105/multiowned_vulnerable.sol",
+        "contracts": [
+            "MultiOwnable",
+            "TestContract"
+        ]
+    },
+    {
+        "file": "SWC/swc-116/timed_crowdsale.sol",
+        "contracts": [
+            "TimedCrowdsale"
+        ]
+    },
+    {
+        "file": "SWC/swc-106/WalletLibrary.sol",
+        "contracts": [
+            "WalletEvents",
+            "WalletAbi",
+            "WalletLibrary"
+        ]
+    },
+    {
+        "file": "SWC/swc-106/simple_suicide.sol",
+        "contracts": [
+            "SimpleSuicide"
+        ]
+    },
+    {
+        "file": "SWC/swc-106/suicide_multitx_infeasible.sol",
+        "contracts": [
+            "SuicideMultiTxFeasible"
+        ]
+    },
+    {
+        "file": "SWC/swc-106/suicide_multitx_feasible.sol",
+        "contracts": [
+            "SuicideMultiTxFeasible"
+        ]
+    },
+    {
+        "file": "SWC/swc-104/unchecked_return_value.sol",
+        "contracts": [
+            "ReturnValue"
+        ]
+    },
+    {
+        "file": "TokenSale/contracts/Migrations.sol",
+        "contracts": [
+            "Migrations"
+        ]
+    },
+    {
+        "file": "TokenSale/contracts/TokenSale.sol",
+        "contracts": [
+            "TokenSale",
+            "Token"
+        ]
+    },
+    {
+        "file": "sFuzz/BountyHunt.sol",
+        "contracts": [
+            "BountyHunt"
+        ]
+    },
+    {
+        "file": "RemiCoin/contracts/Migrations.sol",
+        "contracts": [
+            "Migrations"
+        ]
+    },
+    {
+        "file": "RemiCoin/contracts/RemiCoin.sol",
+        "contracts": [
+            "ERC20Interface",
+            "Owner",
+            "RemiCoin"
+        ]
+    },
+    {
+        "file": "ILF/crowdsale.sol",
+        "contracts": [
+            "Crowdsale"
+        ]
+    },
+    {
+        "file": "ILF/grid.sol",
+        "contracts": [
+            "Grid"
+        ]
+    }
+]
