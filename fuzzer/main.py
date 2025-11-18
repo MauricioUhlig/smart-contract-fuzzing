@@ -27,7 +27,9 @@ from engine.operators import LinearRankingSelection
 from engine.operators import DataDependencyLinearRankingSelection
 from engine.operators import Crossover
 from engine.operators import DataDependencyCrossover
+from engine.operators import DiversityCrossover
 from engine.operators import Mutation
+from engine.operators import DiversityMutation
 from engine.fitness import fitness_function
 
 from utils import settings
@@ -146,6 +148,21 @@ class Fuzzer:
         population = Population(indv_template=Individual(generator=generator),
                                 indv_generator=generator,
                                 size=settings.POPULATION_SIZE if settings.POPULATION_SIZE else size).init()
+        
+        # Create genetic operators
+        if self.args.data_dependency:
+            selection = DataDependencyLinearRankingSelection(env=self.env)
+            crossover = DataDependencyCrossover(pc=settings.PROBABILITY_CROSSOVER, env=self.env)
+            mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
+        if self.args.diversity:
+            selection = LinearRankingSelection()
+            crossover = DiversityCrossover(pc=settings.PROBABILITY_CROSSOVER)
+            mutation = DiversityMutation(pm=settings.PROBABILITY_MUTATION)
+        else:
+            selection = LinearRankingSelection()
+            crossover = Crossover(pc=settings.PROBABILITY_CROSSOVER)
+            mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
+            
 
         if self.args.algorithm == 'pso':
             # Create PSO engine
@@ -185,21 +202,13 @@ class Fuzzer:
             engine = CollaborativeEngine(
                 population=population,
                 generator=generator,
+                crossover=crossover,
+                mutation=mutation,
                 args=self.args
             )
             logger.info("Using Collaborative Diversity Engine (diversity_weight=%.2f, novelty_threshold=%.2f)", 
                        self.args.diversity_weight, self.args.novelty_threshold)
         else:
-            # Create genetic operators for GA
-            if self.args.data_dependency:
-                selection = DataDependencyLinearRankingSelection(env=self.env)
-                crossover = DataDependencyCrossover(pc=settings.PROBABILITY_CROSSOVER, env=self.env)
-                mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
-            else:
-                selection = LinearRankingSelection()
-                crossover = Crossover(pc=settings.PROBABILITY_CROSSOVER)
-                mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
-
             # Create and run evolutionary fuzzing engine (GA)
             engine = EvolutionaryFuzzingEngine(
                 population=population,
@@ -392,8 +401,11 @@ def launch_argument_parser():
     parser.add_argument("--rpc-port", help="Ethereum client RPC port.", action="store", dest="rpc_port", type=int)
 
     parser.add_argument("--data-dependency",
-                        help="Disable/Enable data dependency analysis: 0 - Disable, 1 - Enable (default: 1)", action="store",
+                        help="Disable/Enable data dependency analysis: 0 - Disable, 1 - Enable (default: 0)", action="store",
                         dest="data_dependency", type=int)
+    parser.add_argument("--diversity",
+                        help="Disable/Enable diversity analysis: 0 - Disable, 1 - Enable (default: 0)", action="store",
+                        dest="diversity", type=int)
     parser.add_argument("--constraint-solving",
                         help="Disable/Enable constraint solving: 0 - Disable, 1 - Enable (default: 1)", action="store",
                         dest="constraint_solving", type=int)
@@ -445,7 +457,9 @@ def launch_argument_parser():
         settings.PROBABILITY_MUTATION = args.probability_mutation
 
     if args.data_dependency == None:
-        args.data_dependency = 1
+        args.data_dependency = 0
+    if args.diversity == None:
+        args.diversity = 0
     if args.constraint_solving == None:
         args.constraint_solving = 1
     if args.environmental_instrumentation == None:

@@ -12,7 +12,7 @@
                 "-c", "${input:contractName}",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-g", "100",
+                "-g", "10",
                 "--algorithm", "pso"
             ]
         },
@@ -27,8 +27,11 @@
                 "-c", "${input:contractName}",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-g", "200",
-                "--algorithm", "ga"
+                "-g", "20",
+                "--algorithm", "ga",
+                "--population-size", "40",
+                "--probability-crossover", "0.8",
+                "--probability-mutation", "0.35",
             ]
         },
         {
@@ -41,14 +44,17 @@
                 "--source", "${workspaceFolder}/${input:contractFile}",
                 "--contract", "${input:contractName}",
                 "--algorithm", "collaborative",
-                "--generations", "30",
+                "--generations", "20",
                 "--population-size", "40",
                 "--diversity-weight", "0.5",
                 "--novelty-threshold", "0.6",
                 "--probability-crossover", "0.8",
                 "--probability-mutation", "0.35",
                 "--solc", "v0.4.26",
-                "--evm", "byzantium"
+                "--evm", "byzantium",
+                "-r", "${workspaceFolder}/results/collaborative",
+
+                "--diversity", "1"
             ]
         },
         {
@@ -75,7 +81,7 @@
             "options": [
                 "examples/RemiCoin/contracts/RemiCoin.sol",
                 "examples/TokenSale/contracts/TokenSale.sol",
-                "examples/ILF/contracts/crowdsale.sol"
+                "examples/ILF/crowdsale.sol"
             ],
             "default": "examples/RemiCoin/contracts/RemiCoin.sol"
         },

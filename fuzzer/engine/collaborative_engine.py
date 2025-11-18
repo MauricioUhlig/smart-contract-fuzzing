@@ -91,13 +91,15 @@ class CollaborativeEngine:
     - Enhanced crossover for diversity (promotes diverse offspring)
     """
     
-    def __init__(self, population, generator, args, fitness=None, analysis=None):
+    def __init__(self, population, generator, crossover, mutation, args, fitness=None, analysis=None):
         self.logger = initialize_logger("CollaborativeEngine")
         self.population = population
         self.generator = generator
         self.args = args
         self.analysis = [] if analysis is None else [a() for a in analysis]
         self.fitness = fitness
+        self.crossover = crossover
+        self.mutation = mutation
         # Default fitness functions.
         self.ori_fitness = None if self.fitness is None else self.fitness
 
@@ -160,17 +162,14 @@ class CollaborativeEngine:
                     # Diversity-based selection
                     parents = self._diversity_based_selection(fitness_scores)
                     
-                    # Enhanced crossover for diversity
-                    if random.random() < self.args.probability_crossover:
-                        child1, child2 = self._diversity_crossover(*parents)
-                    else:
-                        child1, child2 = [p.clone() for p in parents]
+
+                    # Crossover.
+                    children = self.crossover.cross(*parents)
+                    # Mutation.
+                    children = [self.mutation.mutate(child, self) for child in children]
+                    # Collect children.
+                    new_population.extend(children)
                     
-                    # Diversity-aware mutation
-                    child1 = self._diversity_mutation(child1, env)
-                    child2 = self._diversity_mutation(child2, env)
-                    
-                    new_population.extend([child1, child2])
                 
                 # Replace population
                 self.population.individuals = new_population[:self.population.size]
@@ -405,110 +404,6 @@ class CollaborativeEngine:
             attempts += 1
         
         return parent1, parent2
-    
-    def _diversity_crossover(self, parent1, parent2):
-        """
-        Enhanced crossover that promotes diversity
-        Combines genes from parents in a way that maximizes offspring diversity
-        """
-        child1_chromosome = []
-        child2_chromosome = []
-        
-        # Interleaved crossover to maximize diversity
-        p1_genes = parent1.chromosome[:]
-        p2_genes = parent2.chromosome[:]
-        
-        # Shuffle to introduce randomness
-        random.shuffle(p1_genes)
-        random.shuffle(p2_genes)
-        
-        # Alternate genes from each parent
-        max_len = max(len(p1_genes), len(p2_genes))
-        for i in range(max_len):
-            if i < len(p1_genes):
-                child1_chromosome.append(p1_genes[i])
-            if i < len(p2_genes):
-                child2_chromosome.append(p2_genes[i])
-            if i < len(p2_genes):
-                child1_chromosome.append(p2_genes[i])
-            if i < len(p1_genes):
-                child2_chromosome.append(p1_genes[i])
-        
-        # Trim to max length
-        from utils.settings import MAX_INDIVIDUAL_LENGTH
-        child1_chromosome = child1_chromosome[:MAX_INDIVIDUAL_LENGTH]
-        child2_chromosome = child2_chromosome[:MAX_INDIVIDUAL_LENGTH]
-        
-        # Create children
-        child1 = parent1.clone()
-        child1.init(child1_chromosome)
-        child2 = parent2.clone()
-        child2.init(child2_chromosome)
-        
-        return child1, child2
-    
-    def _diversity_mutation(self, individual, env):
-        """
-        Diversity-aware mutation that introduces novel variations
-        Higher mutation rate for genes that are common in population
-        """
-        from utils.settings import MAX_INDIVIDUAL_LENGTH
-        
-        # Calculate gene frequency in population
-        gene_frequencies = {}
-        for ind in self.population.individuals:
-            for gene in ind.chromosome:
-                func = gene["arguments"][0]
-                gene_frequencies[func] = gene_frequencies.get(func, 0) + 1
-        
-        # Mutate each gene with adaptive probability
-        for i, gene in enumerate(individual.chromosome):
-            func = gene["arguments"][0]
-            frequency = gene_frequencies.get(func, 0) / len(self.population.individuals)
-            
-            # Higher mutation rate for common genes
-            adaptive_pm = self.args.probability_mutation * (1 + frequency)
-            
-            if random.random() < adaptive_pm:
-                # Mutate this gene
-                mutation_type = random.choice([
-                    "account", "amount", "arguments", "timestamp", 
-                    "blocknumber", "gaslimit"
-                ])
-                
-                if mutation_type == "account":
-                    gene["account"] = self.generator.get_random_account(func)
-                elif mutation_type == "amount":
-                    gene["amount"] = self.generator.get_random_amount(func)
-                elif mutation_type == "arguments":
-                    if len(gene["arguments"]) > 1:
-                        arg_idx = random.randint(1, len(gene["arguments"]) - 1)
-                        # if arg_idx < len(gene["arguments"]):
-                        arg_type = env.interface[func][arg_idx - 1]
-                        gene["arguments"][arg_idx] = self.generator.get_random_argument(
-                            arg_type, func, arg_idx - 1
-                        )
-                elif mutation_type == "timestamp":
-                    gene["timestamp"] = self.generator.get_random_timestamp(func)
-                elif mutation_type == "blocknumber":
-                    gene["blocknumber"] = self.generator.get_random_blocknumber(func)
-                elif mutation_type == "gaslimit":
-                    gene["gaslimit"] = self.generator.get_random_gaslimit(func)
-        
-        # Add/remove genes to promote diversity
-        if random.random() < self.args.probability_mutation:
-            if len(individual.chromosome) < MAX_INDIVIDUAL_LENGTH and random.random() < 0.5:
-                # Add a new gene
-                new_gene = self.generator.generate_random_input()
-                individual.chromosome.append(new_gene)
-            elif len(individual.chromosome) > 1 and random.random() < 0.5:
-                # Remove a gene
-                individual.chromosome.pop(random.randint(0, len(individual.chromosome) - 1))
-        
-        # Recalculate hash
-        new_individual = individual.clone()
-        new_individual.init(individual.chromosome)
-        return new_individual
 
     def fitness_register(self, fn):
             '''

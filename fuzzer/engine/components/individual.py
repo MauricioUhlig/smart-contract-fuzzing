@@ -28,12 +28,21 @@ class Individual():
             self.chromosome = self.generator.generate_random_individual()
         else:
             self.chromosome = chromosome
-        self.solution = self.decode()
+        self.solution = []
         return self
 
     def clone(self):
         indv = self.__class__(generator=self.generator)
         indv.init(chromosome=deepcopy(self.chromosome))
+        return indv
+
+    def clone_fast(self):
+        """Faster cloning if chromosome elements are simple"""
+        indv = self.__class__(generator=self.generator)
+        # Use list comprehension instead of deepcopy if possible
+        indv.chromosome = [gene.copy() if hasattr(gene, 'copy') else gene 
+                          for gene in self.chromosome]
+        indv.solution = []  # Don't copy solution, regenerate when needed
         return indv
 
     def decode(self):
