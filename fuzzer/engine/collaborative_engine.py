@@ -123,6 +123,8 @@ class CollaborativeEngine:
         self.logger.info(f"Population size: {self.population.size}, Generations: {ng}")
         self.logger.info(f"Diversity weight: {self.diversity_weight}, Novelty threshold: {self.novelty_threshold}")
 
+        self.env = env
+
         try: 
             execution_begin = time.time()
 
