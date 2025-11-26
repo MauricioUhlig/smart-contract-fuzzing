@@ -29,8 +29,10 @@ def invoke_fuzzer(source_file, contract_name, annotations, extra_args):
     cmd = [
         "python3", "fuzzer/main.py",
         "--source", "examples/"+source_file,
-        "--contract", contract_name
+        "--contract", contract_name,
+        "-r", "results/"+ extra_args[(extra_args.index('--algorithm')+1)]+ '/'+ source_file.replace('/', '-').replace(".sol", '')
     ]
+
     
     # Add extra arguments
     cmd.extend(extra_args)

@@ -83,6 +83,30 @@
                 "--json",
                 "--output", "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}"
             ]
+        },
+        {
+            "name": "Batch runner",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/utils/batch_invoker.py",
+            "console": "integratedTerminal",
+            "args": [
+                "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}",
+                "--algorithm", "collaborative",
+                "--generations", "20",
+                "--population-size", "40",
+                "--diversity-weight", "0.5",
+                "--novelty-threshold", "0.6",
+                "--probability-crossover", "0.8",
+                "--probability-mutation", "0.35",
+                "--solc", "v0.4.26",
+                "--evm", "byzantium",
+                "-r", "${workspaceFolder}/results/collaborative",
+
+                "--diversity", "1"
+
+
+            ]
         }
     ],
     "inputs": [
