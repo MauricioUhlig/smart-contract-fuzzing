@@ -27,7 +27,7 @@
                 "-c", "${input:contractName}",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-g", "20",
+                "-g", "10",
                 "--algorithm", "ga",
                 "--population-size", "40",
                 "--probability-crossover", "0.8",
@@ -44,7 +44,7 @@
                 "--source", "${workspaceFolder}/${input:contractFile}",
                 "--contract", "${input:contractName}",
                 "--algorithm", "collaborative",
-                "--generations", "20",
+                "--generations", "10",
                 "--population-size", "40",
                 "--diversity-weight", "0.5",
                 "--novelty-threshold", "0.6",
@@ -101,7 +101,29 @@
                 "--probability-mutation", "0.35",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-r", "${workspaceFolder}/results/collaborative",
+
+                "--diversity", "1"
+
+
+            ]
+        },
+        {
+            "name": "Parallel Batch runner",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/utils/parallel_batch_runner.py",
+            "console": "integratedTerminal",
+            "args": [
+                "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}",
+                "--algorithm", "collaborative",
+                "--generations", "20",
+                "--population-size", "40",
+                "--diversity-weight", "0.5",
+                "--novelty-threshold", "0.6",
+                "--probability-crossover", "0.8",
+                "--probability-mutation", "0.35",
+                "--solc", "v0.4.26",
+                "--evm", "byzantium",
 
                 "--diversity", "1"
 
