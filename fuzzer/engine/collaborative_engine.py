@@ -155,7 +155,7 @@ class CollaborativeEngine:
                 self.diversity_history.append(diversity_score)
                 
                 # Update archive with novel solutions
-                self._update_archive(fitness_scores)
+                # self._update_archive(fitness_scores)
                 
                 # Create new generation using diversity-aware operators
                 new_population = []
@@ -212,183 +212,393 @@ class CollaborativeEngine:
         
         Collaborative fitness = Individual fitness + Group contribution bonus
         """
+        # Get base fitness scores
+        all_fitness = self.population.all_fits(self.fitness)
         fitness_scores = {}
         
-        # Calculate individual fitness
-        all_fitness = self.population.all_fits(self.fitness)                    
+        # Build fitness mapping
+        for i, individual in enumerate(self.population.individuals):
+            fitness_scores[individual.hash] = all_fitness[i]
         
-        for i in range(self.population.size):
-            individual = self.population.individuals[i]
-            individual_fitness = all_fitness[i]
-            fitness_scores[individual.hash] = individual_fitness
+        # Calculate bonuses in single pass
+        unique_contributions, complementarities = self._calculate_collaborative_bonuses_single_pass(env)
         
-        # Add group contribution bonus
+        # Apply bonuses
         for individual in self.population.individuals:
-            # Bonus for covering unique branches
-            unique_contribution = self._calculate_unique_contribution(individual, env)
-            
-            # Bonus for complementing other individuals
-            complementarity = self._calculate_complementarity(individual, env)
-            
-            # Combined collaborative fitness
-            group_bonus = unique_contribution + complementarity
-            fitness_scores[individual.hash] += group_bonus * self.diversity_weight
+            individual_hash = individual.hash
+            group_bonus = unique_contributions[individual_hash] + complementarities[individual_hash]
+            fitness_scores[individual_hash] += group_bonus * self.diversity_weight
         
         return fitness_scores
-    
+        
+    def _calculate_collaborative_bonuses_single_pass(self, env):
+        """
+        Single-pass calculation of both unique contributions and complementarity
+        """
+        # Build coverage data
+        branch_coverage = {}  # (jumpi, dest) -> set of individual hashes
+        individual_coverage = {}  # individual hash -> set of (jumpi, dest)
+        valid_individuals = set()
+        
+        # Single pass to build all data structures
+        for individual in self.population.individuals:
+            individual_hash = individual.hash
+            if individual_hash not in env.individual_branches:
+                continue
+                
+            valid_individuals.add(individual_hash)
+            individual_branches = set()
+            
+            for jumpi, destinations in env.individual_branches[individual_hash].items():
+                for dest, covered in destinations.items():
+                    if covered:
+                        branch = (jumpi, dest)
+                        individual_branches.add(branch)
+                        
+                        if branch not in branch_coverage:
+                            branch_coverage[branch] = set()
+                        branch_coverage[branch].add(individual_hash)
+            
+            individual_coverage[individual_hash] = individual_branches
+        
+        # Calculate bonuses in single pass
+        population_size = len(valid_individuals)
+        coverage_threshold = population_size * 0.3
+        unique_contributions = {}
+        complementarities = {}
+        
+        for individual_hash, branches in individual_coverage.items():
+            unique_count = 0
+            complementarity_score = 0
+            
+            for branch in branches:
+                covering_individuals = branch_coverage[branch]
+                
+                # Unique contribution
+                if len(covering_individuals) == 1:
+                    unique_count += 1
+                
+                # Complementarity
+                if len(covering_individuals) < coverage_threshold:
+                    complementarity_score += 1
+            
+            unique_contributions[individual_hash] = float(unique_count)
+            complementarities[individual_hash] = float(complementarity_score)
+        
+        # Handle individuals without coverage data
+        for individual in self.population.individuals:
+            if individual.hash not in valid_individuals:
+                unique_contributions[individual.hash] = 0.0
+                complementarities[individual.hash] = 0.0
+        
+        return unique_contributions, complementarities
+
     def _calculate_unique_contribution(self, individual, env):
         """Calculate how many unique branches this individual covers"""
-        if individual.hash not in env.individual_branches:
-            print("not in!")
+        individual_hash = individual.hash
+        
+        # Early return if individual has no branch data
+        if individual_hash not in env.individual_branches:
             return 0.0
         
+        # Get population branch coverage (excludes current individual)
+        population_coverage = self._get_population_branch_coverage(env, exclude_individual_hash=individual_hash)
+        
+        # Extract individual's covered branches efficiently
         individual_branches = set()
-        for jumpi in env.individual_branches[individual.hash]:
-            for dest in env.individual_branches[individual.hash][jumpi]:
-                if env.individual_branches[individual.hash][jumpi][dest]:
+        individual_data = env.individual_branches[individual_hash]
+        
+        for jumpi, destinations in individual_data.items():
+            for dest, covered in destinations.items():
+                if covered:
                     individual_branches.add((jumpi, dest))
         
-        # Count branches covered by this individual but not by others
+        # Count branches that are ONLY covered by this individual
         unique_count = 0
         for branch in individual_branches:
-            covered_by_others = False
-            for other in self.population.individuals:
-                if other.hash == individual.hash:
-                    continue
-                if other.hash in env.individual_branches:
-                    jumpi, dest = branch
-                    if jumpi in env.individual_branches[other.hash]:
-                        if dest in env.individual_branches[other.hash][jumpi]:
-                            if env.individual_branches[other.hash][jumpi][dest]:
-                                covered_by_others = True
-                                break
-            if not covered_by_others:
+            if branch not in population_coverage:
                 unique_count += 1
         
         return float(unique_count)
+
+    def _get_population_branch_coverage(self, env, exclude_individual_hash=None):
+        """
+        Precompute all branches covered by the population (excluding specified individual)
+        Returns: set of (jumpi, dest) branches covered by population
+        """
+        # Cache key for memoization
+        cache_key = f"population_coverage_exclude_{exclude_individual_hash}"
+        
+        if hasattr(self, '_coverage_cache') and cache_key in self._coverage_cache:
+            return self._coverage_cache[cache_key]
+        
+        population_branches = set()
+        
+        for other in self.population.individuals:
+            other_hash = other.hash
+            
+            # Skip excluded individual
+            if other_hash == exclude_individual_hash:
+                continue
+                
+            if other_hash in env.individual_branches:
+                other_data = env.individual_branches[other_hash]
+                
+                for jumpi, destinations in other_data.items():
+                    for dest, covered in destinations.items():
+                        if covered:
+                            population_branches.add((jumpi, dest))
+        
+        # Initialize cache if needed
+        if not hasattr(self, '_coverage_cache'):
+            self._coverage_cache = {}
+        
+        self._coverage_cache[cache_key] = population_branches
+        return population_branches    
     
     def _calculate_complementarity(self, individual, env):
         """Calculate how well this individual complements the population"""
-        if individual.hash not in env.individual_branches:
+        individual_hash = individual.hash
+        
+        # Early return if individual has no branch data
+        if individual_hash not in env.individual_branches:
             return 0.0
         
-        # Reward individuals that cover branches not well-covered by population
-        complementarity_score = 0.0
+        # Precompute population branch coverage
+        branch_coverage = self._get_population_branch_coverage(env, individual_hash)
+        coverage_threshold = self.population.size * 0.3
         
-        for jumpi in env.individual_branches[individual.hash]:
-            for dest in env.individual_branches[individual.hash][jumpi]:
-                if env.individual_branches[individual.hash][jumpi][dest]:
-                    # Count how many other individuals cover this branch
-                    coverage_count = 0
-                    for other in self.population.individuals:
-                        if other.hash != individual.hash and other.hash in env.individual_branches:
-                            if jumpi in env.individual_branches[other.hash]:
-                                if dest in env.individual_branches[other.hash][jumpi]:
-                                    if env.individual_branches[other.hash][jumpi][dest]:
-                                        coverage_count += 1
+        complementarity_score = 0.0
+        individual_branches = env.individual_branches[individual_hash]
+        
+        # Single pass through individual's branches
+        for jumpi, destinations in individual_branches.items():
+            for dest, covered in destinations.items():
+                if covered:
+                    branch = (jumpi, dest)
+                    coverage_count = branch_coverage.get(branch, 0)
                     
-                    # Higher score for branches covered by fewer individuals
-                    if coverage_count < self.population.size * 0.3:
+                    # Reward branches with below-average coverage
+                    if coverage_count < coverage_threshold:
                         complementarity_score += 1.0
         
         return complementarity_score
-    
-    def _calculate_population_diversity(self):
-        """Calculate overall population diversity using behavioral distance"""
-        if len(self.population.individuals) < 2:
-            return 0.0
-        
-        total_distance = 0.0
-        comparisons = 0
-        
-        for i in range(len(self.population.individuals)):
-            for j in range(i + 1, len(self.population.individuals)):
-                distance = self._behavioral_distance(
-                    self.population.individuals[i],
-                    self.population.individuals[j]
-                )
-                total_distance += distance
-                comparisons += 1
-        
-        return total_distance / comparisons if comparisons > 0 else 0.0
-    
-    def _behavioral_distance(self, ind1, ind2):
+
+    def _get_population_branch_coverage(self, env, exclude_individual_hash=None):
         """
-        Calculate behavioral distance between two individuals
-        Based on differences in chromosome structure and function calls
+        Precompute how many individuals cover each branch in the population
+        Returns: dict{(jumpi, dest): coverage_count}
         """
-        # Chromosome length difference
-        len_diff = abs(len(ind1.chromosome) - len(ind2.chromosome))
+        # Use caching to avoid recomputation
+        if hasattr(self, '_branch_coverage_cache'):
+            return self._branch_coverage_cache
         
-        # Function call differences
-        functions1 = set(gene["arguments"][0] for gene in ind1.chromosome)
-        functions2 = set(gene["arguments"][0] for gene in ind2.chromosome)
-        function_diff = len(functions1.symmetric_difference(functions2))
+        branch_coverage = {}
+        
+        # Build branch coverage counts
+        for individual in self.population.individuals:
+            individual_hash = individual.hash
+            
+            # Skip excluded individual if provided
+            if individual_hash == exclude_individual_hash:
+                continue
+                
+            if individual_hash in env.individual_branches:
+                individual_branches = env.individual_branches[individual_hash]
+                
+                for jumpi, destinations in individual_branches.items():
+                    for dest, covered in destinations.items():
+                        if covered:
+                            branch = (jumpi, dest)
+                            branch_coverage[branch] = branch_coverage.get(branch, 0) + 1
+        
+        # Cache for potential reuse
+        self._branch_coverage_cache = branch_coverage
+        return branch_coverage
+    
+    def _behavioral_distance(self, features1, features2):
+        """
+        Optimized behavioral distance calculation using precomputed features
+        """
+        # Chromosome length difference (normalized)
+        len_diff = abs(features1['length'] - features2['length'])
+        max_len = max(features1['length'], features2['length'], 1)
+        
+        # Function call differences using set operations
+        function_diff = len(features1['functions'] ^ features2['functions'])  # Symmetric difference
         
         # Account differences
-        accounts1 = set(gene["account"] for gene in ind1.chromosome)
-        accounts2 = set(gene["account"] for gene in ind2.chromosome)
-        account_diff = len(accounts1.symmetric_difference(accounts2))
+        account_diff = len(features1['accounts'] ^ features2['accounts'])
         
-        # Normalize and combine
-        max_len = max(len(ind1.chromosome), len(ind2.chromosome), 1)
+        # Combine distances (normalized by max length)
         distance = (len_diff + function_diff + account_diff) / (max_len * 3)
         
         return distance
     
-    def _update_archive(self, fitness_scores):
-        """Update archive with novel high-performing solutions"""
-        for individual in self.population.individuals:
-            if fitness_scores[individual.hash] > 0:
-                # Check if individual is novel compared to archive
-                is_novel = True
-                if len(self.archive) > 0:
-                    min_distance = min(
-                        self._behavioral_distance(individual, archived)
-                        for archived in self.archive
-                    )
-                    is_novel = min_distance > self.novelty_threshold
-                
-                if is_novel:
-                    self.archive.append(individual.clone())
-                    
-                    # Maintain archive size
-                    if len(self.archive) > self.archive_size:
-                        # Remove least fit individual from archive
-                        archive_fitness = [
-                            fitness_scores.get(ind.hash, 0) for ind in self.archive
-                        ]
-                        min_idx = archive_fitness.index(min(archive_fitness))
-                        self.archive.pop(min_idx)
-    
-    def _diversity_based_selection(self, fitness_scores):
+    def _extract_behavioral_features(self, individual):
         """
-        Select parents balancing fitness and diversity
-        Uses tournament selection with diversity consideration
+        Extract and cache behavioral features for efficient distance calculation
+        """
+        # Use caching to avoid recomputation
+        if hasattr(individual, '_cached_features'):
+            return individual._cached_features
+        
+        chromosome = individual.chromosome
+        features = {
+            'length': len(chromosome),
+            'functions': set(),
+            'accounts': set(),
+            'function_count': {},
+            'account_count': {}
+        }
+        
+        # Single pass through chromosome
+        for gene in chromosome:
+            # Extract function (first argument)
+            if gene["arguments"]:
+                function = gene["arguments"][0]
+                features['functions'].add(function)
+                features['function_count'][function] = features['function_count'].get(function, 0) + 1
+            
+            # Extract account
+            account = gene["account"]
+            features['accounts'].add(account)
+            features['account_count'][account] = features['account_count'].get(account, 0) + 1
+        
+        # Cache for future use
+        individual._cached_features = features
+        return features
+
+    def _calculate_population_diversity_optimized(self):
+        """
+        Fully optimized population diversity calculation
+        Automatically chooses the best strategy based on population size
+        """
+        population_size = len(self.population.individuals)
+        
+        if population_size < 2:
+            return 0.0
+        elif population_size <= 20:
+            return self._calculate_population_diversity_batch()
+        else:
+            return self._calculate_diversity_sampled(sample_size=50)
+
+    def _calculate_population_diversity_batch(self):
+        """
+        Batch-optimized diversity calculation for large populations
+        Uses sampling for very large populations
+        """
+        population_size = len(self.population.individuals)
+        if population_size < 2:
+            return 0.0
+        
+        # For large populations, use sampling to reduce computation
+        if population_size > 50:
+            return self._calculate_diversity_sampled(sample_size=30)
+        
+        # Precompute all features
+        features_list = [self._extract_behavioral_features(ind) for ind in self.population.individuals]
+        
+        # Calculate using efficient pairwise computation
+        total_distance = 0.0
+        comparisons = 0
+        
+        for i in range(population_size):
+            features_i = features_list[i]
+            for j in range(i + 1, population_size):
+                distance = self._behavioral_distance(features_i, features_list[j])
+                total_distance += distance
+                comparisons += 1
+        
+        return total_distance / comparisons
+
+    def _calculate_diversity_sampled(self, sample_size=30):
+        """
+        Use random sampling to estimate diversity for large populations
+        """
+        population = self.population.individuals
+        if len(population) <= sample_size:
+            return self._calculate_population_diversity_batch()
+        
+        # Randomly sample individuals
+        sampled_individuals = random.sample(population, sample_size)
+        
+        # Precompute features for sampled individuals
+        sampled_features = [self._extract_behavioral_features(ind) for ind in sampled_individuals]
+        
+        # Calculate diversity within sample
+        total_distance = 0.0
+        comparisons = 0
+        sample_size = len(sampled_individuals)
+        
+        for i in range(sample_size):
+            features_i = sampled_features[i]
+            for j in range(i + 1, sample_size):
+                distance = self._behavioral_distance(features_i, sampled_features[j])
+                total_distance += distance
+                comparisons += 1
+        
+        return total_distance / comparisons if comparisons > 0 else 0.0
+
+    # Update the main method to use the optimized version
+    def _calculate_population_diversity(self):
+        """Public interface - uses optimized implementation"""
+        return self._calculate_population_diversity_optimized()
+
+    def _diversity_based_selection_cached(self, fitness_scores):
+        """
+        Version with comprehensive caching for repeated calls
         """
         tournament_size = 3
+        population = self.population.individuals
         
-        def select_one():
-            # Random tournament
-            candidates = random.sample(self.population.individuals, tournament_size)
+        # Check if we can reuse cached features
+        if not hasattr(self, '_selection_features_cache'):
+            self._selection_features_cache = {}
+            self._last_population_hash = None
+        
+        # Generate population hash for cache validation
+        current_pop_hash = hash(tuple(ind.hash for ind in population))
+        
+        # Rebuild cache if population changed
+        if current_pop_hash != self._last_population_hash:
+            self._selection_features_cache.clear()
+            for individual in population:
+                self._selection_features_cache[individual.hash] = self._extract_behavioral_features(individual)
+            self._last_population_hash = current_pop_hash
+        
+        features_cache = self._selection_features_cache
+        
+        def select_one_cached():
+            candidates = random.sample(population, tournament_size)
             
-            # Score each candidate: fitness + diversity bonus
             best_candidate = None
             best_score = -float('inf')
             
             for candidate in candidates:
-                # Base fitness
-                score = fitness_scores[candidate.hash]
+                candidate_hash = candidate.hash
+                candidate_feat = features_cache[candidate_hash]
                 
-                # Diversity bonus: average distance to population
-                diversity_bonus = 0.0
-                for other in self.population.individuals:
-                    if other.hash != candidate.hash:
-                        diversity_bonus += self._behavioral_distance(candidate, other)
-                diversity_bonus /= (len(self.population.individuals) - 1)
+                # Efficient diversity calculation
+                total_distance = 0.0
+                count = 0
                 
-                # Combined score
-                total_score = score + diversity_bonus * self.diversity_weight * 10
+                # Use a sample for large populations
+                if len(population) > 20:
+                    sample_size = min(15, len(population) - 1)
+                    sample_others = random.sample([ind for ind in population if ind.hash != candidate_hash], sample_size)
+                    for other in sample_others:
+                        total_distance += self._behavioral_distance(candidate_feat, features_cache[other.hash])
+                        count += 1
+                else:
+                    for other in population:
+                        if other.hash != candidate_hash:
+                            total_distance += self._behavioral_distance(candidate_feat, features_cache[other.hash])
+                            count += 1
+                
+                diversity_bonus = total_distance / count if count > 0 else 0.0
+                base_score = fitness_scores[candidate_hash]
+                total_score = base_score + diversity_bonus * self.diversity_weight * 10
                 
                 if total_score > best_score:
                     best_score = total_score
@@ -396,16 +606,25 @@ class CollaborativeEngine:
             
             return best_candidate
         
-        parent1 = select_one()
-        parent2 = select_one()
+        parent1 = select_one_cached()
+        parent2 = select_one_cached()
         
-        # Ensure parents are different
-        attempts = 0
-        while parent2.hash == parent1.hash and attempts < 10:
-            parent2 = select_one()
-            attempts += 1
+        # Quick diversity enforcement
+        if parent1.hash == parent2.hash:
+            # Select most different candidate from tournament
+            candidates = random.sample(population, tournament_size)
+            different_candidates = [c for c in candidates if c.hash != parent1.hash]
+            if different_candidates:
+                parent2 = different_candidates[0]
         
         return parent1, parent2
+        
+    def _diversity_based_selection(self, fitness_scores):
+        """
+        Select parents balancing fitness and diversity
+        Uses tournament selection with diversity consideration
+        """
+        return self._diversity_based_selection_cached(fitness_scores)
 
     def fitness_register(self, fn):
             '''

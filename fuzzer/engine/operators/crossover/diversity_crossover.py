@@ -40,9 +40,7 @@ class DiversityCrossover(Crossover):
         p1_genes = _father.chromosome[:]  # Shallow copy is sufficient if genes are immutable
         p2_genes = _mother.chromosome[:]
         
-        # Pre-allocate lists with estimated capacity to avoid resizing
-        estimated_len = min(len(p1_genes) + len(p2_genes), max_length)
-        child1_chromosome = []  # Can pre-allocate: [None] * estimated_len
+        child1_chromosome = []  
         child2_chromosome = []
         
         # Shuffle in place
