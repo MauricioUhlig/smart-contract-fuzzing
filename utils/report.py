@@ -8,46 +8,54 @@ from typing import List, Dict, Any
 import glob
 import numpy as np
 
+def find_json_files_recursively(folder_path: str) -> List[str]:
+    """
+    Recursively find all JSON files in folder and subfolders.
+    """
+    json_files = []
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith('.json'):
+                json_files.append(os.path.join(root, file))
+    return json_files
+
 def read_json_files(folder_path: str) -> List[Dict[str, Any]]:
     """
-    Read all JSON files from a folder and return a list of dictionaries.
-    
-    Args:
-        folder_path (str): Path to the folder containing JSON files
-        
-    Returns:
-        List[Dict[str, Any]]: List of parsed JSON data
+    Read all JSON files from a folder recursively.
     """
-    json_files = glob.glob(os.path.join(folder_path, "*.json"))
+    json_files = find_json_files_recursively(folder_path)
     data = []
     
     for file_path in json_files:
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 json_data = json.load(file)
-                # Add filename for tracking
                 json_data['filename'] = os.path.basename(file_path)
+                json_data['relative_path'] = os.path.relpath(file_path, folder_path)
+                json_data['folder'] = os.path.dirname(os.path.relpath(file_path, folder_path))
                 data.append(json_data)
-        except (json.JSONDecodeError, KeyError, Exception) as e:
+        except Exception as e:
             print(f"Error reading {file_path}: {e}")
     
+    print(f"Found {len(json_files)} JSON files in {folder_path} and its subfolders")
     return data
 
 def create_coverage_dataframe(json_data: List[Dict[str, Any]]) -> pd.DataFrame:
     """
     Create a pandas DataFrame with coverage data over time.
-    
-    Args:
-        json_data (List[Dict[str, Any]]): List of JSON data dictionaries
-        
-    Returns:
-        pd.DataFrame: DataFrame containing coverage metrics over time
     """
     records = []
     
     for file_data in json_data:
         filename = file_data.get('filename', 'unknown')
-        contract_name = list(file_data.keys())[0] if file_data else 'unknown'
+        relative_path = file_data.get('relative_path', 'unknown')
+        folder = file_data.get('folder', 'unknown')
+        
+        contract_keys = [k for k in file_data.keys() if k not in ['filename', 'relative_path', 'folder']]
+        if not contract_keys:
+            continue
+            
+        contract_name = contract_keys[0]
         
         if contract_name in file_data and 'generations' in file_data[contract_name]:
             generations = file_data[contract_name]['generations']
@@ -57,6 +65,8 @@ def create_coverage_dataframe(json_data: List[Dict[str, Any]]) -> pd.DataFrame:
                 cumulative_time += gen_data['time']
                 record = {
                     'filename': filename,
+                    'relative_path': relative_path,
+                    'folder': folder,
                     'contract': contract_name,
                     'generation': gen_data['generation'],
                     'time_elapsed': cumulative_time,
@@ -65,406 +75,411 @@ def create_coverage_dataframe(json_data: List[Dict[str, Any]]) -> pd.DataFrame:
                     'unique_transactions': gen_data['unique_transactions'],
                     'code_coverage': gen_data['code_coverage'],
                     'branch_coverage': gen_data['branch_coverage'],
+                    'instruction_coverage': gen_data.get('instruction_coverage', gen_data.get('code_coverage', 0)),
                     'total_execution_time': file_data[contract_name].get('execution_time', 0),
                     'memory_consumption': file_data[contract_name].get('memory_consumption', 0),
-                    'seed': file_data[contract_name].get('seed', 0)
+                    'seed': file_data[contract_name].get('seed', 0),
+                    'tag': file_data[contract_name].get('tag', ""),
+                    'algorithm': file_data[contract_name].get('algorithm', 'unknown')
                 }
                 records.append(record)
     
     return pd.DataFrame(records)
 
-def create_time_binned_dataframe(df: pd.DataFrame, time_interval: float = 5.0) -> pd.DataFrame:
+def create_smooth_time_series_with_std(df: pd.DataFrame, time_interval: float = 5.0, max_time: float = 600.0) -> pd.DataFrame:
     """
-    Create time-binned data for consistent time-based analysis.
+    Create smooth time series data with standard deviation for plotting coverage over time.
     
     Args:
-        df (pd.DataFrame): Original coverage DataFrame
-        time_interval (float): Time interval in seconds for binning
-        
-    Returns:
-        pd.DataFrame: Time-binned coverage data
+        df: Input DataFrame
+        time_interval: Time interval in seconds for sampling
+        max_time: Maximum time to show on X-axis
     """
     if df.empty:
-        return df
+        return pd.DataFrame()
     
-    # Create time bins
-    max_time = df['time_elapsed'].max()
-    time_bins = np.arange(0, max_time + time_interval, time_interval)
+    # Cap the time points at max_time
+    time_points = np.arange(0, min(df['time_elapsed'].max(), max_time) + time_interval, time_interval)
     
-    binned_records = []
+    smooth_records = []
     
-    for contract in df['contract'].unique():
-        contract_data = df[df['contract'] == contract].copy()
+    # Group by algorithm
+    for algorithm in df['algorithm'].unique():
+        algorithm_data = df[df['algorithm'] == algorithm]
         
-        for i in range(len(time_bins) - 1):
-            start_time = time_bins[i]
-            end_time = time_bins[i + 1]
+        for time_point in time_points:
+            if time_point > max_time:
+                continue
+                
+            # Find all data points at or before this time point for each contract
+            coverage_values = []
+            for contract in algorithm_data['contract'].unique():
+                contract_data = algorithm_data[algorithm_data['contract'] == contract]
+                time_slice = contract_data[contract_data['time_elapsed'] <= time_point]
+                if not time_slice.empty:
+                    latest_data = time_slice.iloc[-1]
+                    coverage_values.append(latest_data['instruction_coverage'])
             
-            # Get data points within this time bin
-            time_bin_data = contract_data[
-                (contract_data['time_elapsed'] >= start_time) & 
-                (contract_data['time_elapsed'] < end_time)
-            ]
-            
-            if not time_bin_data.empty:
-                # Use the last measurement in the time bin
-                latest_data = time_bin_data.iloc[-1]
-                record = {
-                    'contract': contract,
-                    'time_bin_start': start_time,
-                    'time_bin_center': (start_time + end_time) / 2,
-                    'time_bin_end': end_time,
-                    'code_coverage': latest_data['code_coverage'],
-                    'branch_coverage': latest_data['branch_coverage'],
-                    'total_transactions': latest_data['total_transactions'],
-                    'unique_transactions': latest_data['unique_transactions']
-                }
-                binned_records.append(record)
+            if coverage_values:
+                smooth_records.append({
+                    'algorithm': algorithm,
+                    'time_elapsed': time_point,
+                    'mean_coverage': np.mean(coverage_values),
+                    'std_coverage': np.std(coverage_values),
+                    'min_coverage': np.min(coverage_values),
+                    'max_coverage': np.max(coverage_values),
+                    'sample_size': len(coverage_values)
+                })
     
-    return pd.DataFrame(binned_records)
+    return pd.DataFrame(smooth_records)
 
-def calculate_time_based_statistics(df: pd.DataFrame) -> Dict[str, Any]:
+def create_conference_style_plots_with_std(df: pd.DataFrame, smooth_df: pd.DataFrame, output_dir: str = "conference_plots", max_time: float = 600.0):
     """
-    Calculate comprehensive statistics for code and branch coverage over time.
+    Create conference-style plots with standard deviation borders.
     
     Args:
-        df (pd.DataFrame): DataFrame with coverage data over time
-        
-    Returns:
-        Dict[str, Any]: Dictionary containing various statistics
+        df: Original DataFrame
+        smooth_df: Smoothed DataFrame with std calculations
+        output_dir: Output directory
+        max_time: Maximum time to show on X-axis (upper bound)
     """
-    stats = {
-        'overall': {
-            'mean_code_coverage': df['code_coverage'].mean(),
-            'mean_branch_coverage': df['branch_coverage'].mean(),
-            'min_code_coverage': df['code_coverage'].min(),
-            'min_branch_coverage': df['branch_coverage'].min(),
-            'max_code_coverage': df['code_coverage'].max(),
-            'max_branch_coverage': df['branch_coverage'].max(),
-            'std_code_coverage': df['code_coverage'].std(),
-            'std_branch_coverage': df['branch_coverage'].std(),
-            'total_analysis_time': df['time_elapsed'].max(),
-            'average_time_to_max_coverage': None
-        },
-        'by_time_interval': df.groupby(pd.cut(df['time_elapsed'], bins=10)).agg({
-            'code_coverage': ['mean', 'min', 'max', 'std'],
-            'branch_coverage': ['mean', 'min', 'max', 'std'],
-            'total_transactions': 'mean'
-        }).round(2),
-        'by_contract': df.groupby('contract').agg({
-            'code_coverage': ['mean', 'min', 'max', 'std'],
-            'branch_coverage': ['mean', 'min', 'max', 'std'],
-            'time_elapsed': 'max',
-            'total_transactions': 'max'
-        }).round(2),
-        'coverage_convergence': {}
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Set style for academic/conference papers
+    plt.style.use('default')
+    sns.set_style("whitegrid")
+    
+    # Enhanced color palette for algorithms
+    algorithm_colors = {
+        'collaborative': '#1f77b4',  # Blue
+        'pyswarms': '#ff7f0e',         # Orange
+        'pso': '#2ca02c',       # Green
+
+        'Echidna': '#d62728',     # Red
+        'Harvey': '#9467bd',      # Purple
+        'Manticore': '#8c564b',   # Brown
+        'Slither': '#e377c2',     # Pink
+        'default': '#7f7f7f'      # Gray for others
     }
     
-    # Calculate coverage convergence statistics
+    # Plot 1: Main Instruction Coverage Comparison with STD
+    fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+    
+    _plot_instruction_coverage_with_std(ax, smooth_df, algorithm_colors, max_time)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'instruction_coverage_with_std.png'), 
+                dpi=300, bbox_inches='tight', facecolor='white')
+    plt.savefig(os.path.join(output_dir, 'instruction_coverage_with_std.pdf'), 
+                bbox_inches='tight', facecolor='white')
+    plt.close()
+    
+    # Plot 2: Small vs Large Contracts with STD
+    _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_time)
+    
+    # Plot 3: All coverage types with STD
+    _create_detailed_coverage_plots_with_std(df, output_dir, algorithm_colors, max_time)
+
+def _plot_instruction_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
+    """
+    Plot instruction coverage with standard deviation borders.
+    """
+    if smooth_df.empty:
+        ax.text(0.5, 0.5, 'No data available', transform=ax.transAxes, 
+                ha='center', va='center', fontsize=12)
+        return
+    
+    # Plot each algorithm with std borders
+    for algorithm in smooth_df['algorithm'].unique():
+        algorithm_data = smooth_df[smooth_df['algorithm'] == algorithm].sort_values('time_elapsed')
+        
+        if algorithm_data.empty:
+            continue
+            
+        color = algorithm_colors.get(algorithm, algorithm_colors['default'])
+        
+        # Plot mean line
+        ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean_coverage'],
+               color=color, linewidth=3, label=algorithm, alpha=0.9)
+        
+        # Plot standard deviation area
+        ax.fill_between(algorithm_data['time_elapsed'],
+                       algorithm_data['mean_coverage'] - algorithm_data['std_coverage'],
+                       algorithm_data['mean_coverage'] + algorithm_data['std_coverage'],
+                       color=color, alpha=0.2, label=f'{algorithm} ±1σ')
+        
+        # Plot min/max borders (optional, more transparent)
+        ax.fill_between(algorithm_data['time_elapsed'],
+                       algorithm_data['min_coverage'],
+                       algorithm_data['max_coverage'],
+                       color=color, alpha=0.1, label=f'{algorithm} range')
+    
+    # Enhanced styling
+    ax.set_xlabel('Time in Seconds', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Instruction Coverage (%)', fontsize=14, fontweight='bold')
+    ax.set_title('Overall Instruction Coverage Over Time with Variability', 
+                 fontsize=16, fontweight='bold', pad=20)
+    
+    # Set axis limits and formatting
+    ax.set_ylim(0, 100)
+    ax.set_xlim(0, max_time)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
+    
+    # Set x-axis ticks
+    x_ticks = np.arange(0, max_time + 100, 100)
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels([str(int(x)) for x in x_ticks])
+    
+    # Grid and legend
+    ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+    
+    # Improved legend
+    handles, labels = ax.get_legend_handles_labels()
+    # Filter to show only mean lines in legend to avoid clutter
+    mean_handles = [h for h, l in zip(handles, labels) if '±' not in l and 'range' not in l]
+    mean_labels = [l for l in labels if '±' not in l and 'range' not in l]
+    ax.legend(mean_handles, mean_labels, 
+              bbox_to_anchor=(1.05, 1), 
+              loc='upper left', 
+              frameon=True,
+              fancybox=True,
+              shadow=True,
+              framealpha=0.9,
+              fontsize=10)
+
+def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_time):
+    """
+    Create separate plots for small vs large contracts with STD.
+    """
+    if df.empty:
+        return
+    
+    # Classify contracts as small or large based on final transaction count
+    contract_sizes = {}
     for contract in df['contract'].unique():
         contract_data = df[df['contract'] == contract]
-        max_code_coverage = contract_data['code_coverage'].max()
-        max_branch_coverage = contract_data['branch_coverage'].max()
-        
-        # Time to reach 90% of max coverage
-        time_to_90pct_code = contract_data[
-            contract_data['code_coverage'] >= 0.9 * max_code_coverage
-        ]['time_elapsed'].min()
-        
-        time_to_90pct_branch = contract_data[
-            contract_data['branch_coverage'] >= 0.9 * max_branch_coverage
-        ]['time_elapsed'].min()
-        
-        stats['coverage_convergence'][contract] = {
-            'time_to_90pct_code': time_to_90pct_code,
-            'time_to_90pct_branch': time_to_90pct_branch,
-            'max_code_coverage': max_code_coverage,
-            'max_branch_coverage': max_branch_coverage
-        }
+        max_tx = contract_data['total_transactions'].max()
+        contract_sizes[contract] = 'Small Contracts' if max_tx <= 3632 else 'Large Contracts'
     
-    return stats
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+    
+    for idx, size_category in enumerate(['Small Contracts', 'Large Contracts']):
+        ax = axes[idx]
+        
+        # Filter data for this size category
+        size_contracts = [c for c, s in contract_sizes.items() if s == size_category]
+        size_data = df[df['contract'].isin(size_contracts)]
+        
+        if size_data.empty:
+            ax.text(0.5, 0.5, f'No {size_category.lower()} data', 
+                    transform=ax.transAxes, ha='center', va='center', fontsize=12)
+            continue
+        
+        # Create smooth time series for this size category
+        smooth_size_data = create_smooth_time_series_with_std(size_data, max_time=max_time)
+        
+        if smooth_size_data.empty:
+            continue
+        
+        # Plot each algorithm
+        for algorithm in smooth_size_data['algorithm'].unique():
+            algorithm_data = smooth_size_data[smooth_size_data['algorithm'] == algorithm].sort_values('time_elapsed')
+            color = algorithm_colors.get(algorithm, algorithm_colors['default'])
+            
+            # Plot mean line
+            ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean_coverage'],
+                   color=color, linewidth=2.5, label=algorithm)
+            
+            # Plot standard deviation area
+            ax.fill_between(algorithm_data['time_elapsed'],
+                           algorithm_data['mean_coverage'] - algorithm_data['std_coverage'],
+                           algorithm_data['mean_coverage'] + algorithm_data['std_coverage'],
+                           color=color, alpha=0.2)
+        
+        # Styling
+        ax.set_xlabel('Time in Seconds', fontsize=12, fontweight='bold')
+        ax.set_ylabel('Instruction Coverage (%)', fontsize=12, fontweight='bold')
+        ax.set_title(f'{size_category}', fontsize=14, fontweight='bold')
+        ax.set_ylim(0, 100)
+        ax.set_xlim(0, max_time)
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
+        ax.grid(True, alpha=0.3)
+        ax.legend()
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'contract_size_comparison_with_std.png'), 
+                dpi=300, bbox_inches='tight', facecolor='white')
+    plt.close()
 
-def create_time_based_plots(df: pd.DataFrame, binned_df: pd.DataFrame, output_dir: str = "coverage_plots"):
+def _create_detailed_coverage_plots_with_std(df, output_dir, algorithm_colors, max_time):
     """
-    Create various plots for coverage analysis over time.
+    Create detailed plots for all coverage types with STD.
+    """
+    coverage_types = ['instruction_coverage', 'code_coverage', 'branch_coverage']
+    titles = ['Instruction Coverage', 'Code Coverage', 'Branch Coverage']
     
-    Args:
-        df (pd.DataFrame): Original DataFrame with time data
-        binned_df (pd.DataFrame): Time-binned DataFrame
-        output_dir (str): Directory to save plots
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    
+    for idx, (coverage_type, title) in enumerate(zip(coverage_types, titles)):
+        ax = axes[idx]
+        
+        # Create temporary DataFrame for this coverage type
+        temp_df = df.copy()
+        temp_df['current_coverage'] = temp_df[coverage_type]
+        
+        # Create smooth time series
+        smooth_data = create_smooth_time_series_with_std(temp_df, max_time=max_time)
+        
+        if smooth_data.empty:
+            ax.text(0.5, 0.5, 'No data', transform=ax.transAxes, 
+                    ha='center', va='center', fontsize=12)
+            continue
+        
+        # Plot each algorithm
+        for algorithm in smooth_data['algorithm'].unique():
+            algorithm_data = smooth_data[smooth_data['algorithm'] == algorithm].sort_values('time_elapsed')
+            color = algorithm_colors.get(algorithm, algorithm_colors['default'])
+            
+            ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean_coverage'],
+                   color=color, linewidth=2, label=algorithm)
+            
+            ax.fill_between(algorithm_data['time_elapsed'],
+                           algorithm_data['mean_coverage'] - algorithm_data['std_coverage'],
+                           algorithm_data['mean_coverage'] + algorithm_data['std_coverage'],
+                           color=color, alpha=0.2)
+        
+        # Styling
+        ax.set_xlabel('Time (seconds)', fontsize=11)
+        ax.set_ylabel(f'{title} (%)', fontsize=11)
+        ax.set_title(title, fontsize=13, fontweight='bold')
+        ax.set_ylim(0, 100)
+        ax.set_xlim(0, max_time)
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
+        ax.grid(True, alpha=0.3)
+        
+        if idx == 0:  # Only show legend on first plot
+            ax.legend()
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'detailed_coverage_with_std.png'), 
+                dpi=300, bbox_inches='tight', facecolor='white')
+    plt.close()
+
+def generate_enhanced_report(df: pd.DataFrame, smooth_df: pd.DataFrame, output_dir: str = "conference_plots"):
+    """
+    Generate enhanced report with variability statistics.
     """
     os.makedirs(output_dir, exist_ok=True)
     
-    # Set style
-    plt.style.use('seaborn-v0_8')
+    report_path = os.path.join(output_dir, 'performance_analysis_with_variability.txt')
     
-    # Plot 1: Coverage progression over time (all contracts)
-    fig, axes = plt.subplots(2,2, figsize=(16, 12))
-    fig.suptitle('Code and Branch Coverage Analysis Over Time', fontsize=16, fontweight='bold')
-    
-    # Plot coverage over time for each contract
-    contracts = df['contract'].unique()
-    # _plot_coverage_over_time_contracts(axes=axes[0], df=df, contracts=contracts)
-    
-    # Plot 2: Mean coverage over time (using binned data)
-    _plot_mean_coverage_over_time(binned_df=binned_df, axes=axes[1])
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'coverage_over_time.png'), dpi=300, bbox_inches='tight')
-    plt.close()
-    
-    # Plot 3: Coverage convergence analysis
-    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
-    
-    for contract in contracts:
-        contract_data = df[df['contract'] == contract]
-        
-        # Normalize time to percentage of total time
-        max_time = contract_data['time_elapsed'].max()
-        normalized_time = (contract_data['time_elapsed'] / max_time) * 100
-        
-        axes[0].plot(normalized_time, contract_data['code_coverage'], 
-                   marker='o', markersize=3, linewidth=2, label=contract)
-        axes[1].plot(normalized_time, contract_data['branch_coverage'], 
-                   marker='s', markersize=3, linewidth=2, label=contract)
-    
-    axes[0].set_xlabel('Normalized Time (% of Total Analysis Time)')
-    axes[0].set_ylabel('Code Coverage (%)')
-    axes[0].set_title('Code Coverage vs Normalized Time')
-    axes[0].legend()
-    axes[0].grid(True, alpha=0.3)
-    
-    axes[1].set_xlabel('Normalized Time (% of Total Analysis Time)')
-    axes[1].set_ylabel('Branch Coverage (%)')
-    axes[1].set_title('Branch Coverage vs Normalized Time')
-    axes[1].legend()
-    axes[1].grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'coverage_convergence.png'), dpi=300, bbox_inches='tight')
-    plt.close()
-    
-    # Plot 4: Coverage vs Transactions over time
-    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
-    
-    for contract in contracts:
-        contract_data = df[df['contract'] == contract]
-        
-        axes[0].plot(contract_data['time_elapsed'], contract_data['total_transactions'], 
-                   marker='o', linewidth=2, label=contract)
-        axes[1].plot(contract_data['time_elapsed'], contract_data['unique_transactions'], 
-                   marker='s', linewidth=2, label=contract)
-    
-    axes[0].set_xlabel('Time Elapsed (seconds)')
-    axes[0].set_ylabel('Total Transactions')
-    axes[0].set_title('Total Transactions Over Time')
-    axes[0].legend()
-    axes[0].grid(True, alpha=0.3)
-    
-    axes[1].set_xlabel('Time Elapsed (seconds)')
-    axes[1].set_ylabel('Unique Transactions')
-    axes[1].set_title('Unique Transactions Over Time')
-    axes[1].legend()
-    axes[1].grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'transactions_over_time.png'), dpi=300, bbox_inches='tight')
-    plt.close()
-
-def _plot_coverage_over_time_contracts(axes, df, contracts):
-    """
-    Plot coverage over time for each contract
-    """
-    colors = plt.cm.Set3(np.linspace(0, 1, len(contracts)))
-    
-    for i, contract in enumerate(contracts):
-        contract_data = df[df['contract'] == contract]
-        color = colors[i]
-        
-        axes[0].plot(contract_data['time_elapsed'], contract_data['code_coverage'], 
-                       marker='o', markersize=4, linewidth=2, label=contract, color=color)
-        axes[1].plot(contract_data['time_elapsed'], contract_data['branch_coverage'], 
-                       marker='s', markersize=4, linewidth=2, label=contract, color=color)
-    
-    axes[0].set_xlabel('Time Elapsed (seconds)')
-    axes[0].set_ylabel('Code Coverage (%)')
-    axes[0].set_title('Code Coverage Over Time')
-    axes[0].legend()
-    axes[0].grid(True, alpha=0.3)
-    
-    axes[1].set_xlabel('Time Elapsed (seconds)')
-    axes[1].set_ylabel('Branch Coverage (%)')
-    axes[1].set_title('Branch Coverage Over Time')
-    axes[1].legend()
-    axes[1].grid(True, alpha=0.3)
-
-def _plot_mean_coverage_over_time(binned_df, axes):
-    """ 
-    Plot Mean coverage over time (using binned data)
-    """
-    if not binned_df.empty:
-        time_binned_avg = binned_df.groupby('time_bin_center').agg({
-            'code_coverage': 'mean',
-            'branch_coverage': 'mean'
-        }).reset_index()
-        
-        axes[0].plot(time_binned_avg['time_bin_center'], time_binned_avg['code_coverage'], 
-                       marker='o', linewidth=3, label='Mean Code Coverage', color='blue', alpha=0.8)
-        axes[0].fill_between(time_binned_avg['time_bin_center'],
-                               time_binned_avg['code_coverage'] - time_binned_avg['code_coverage'].std(),
-                               time_binned_avg['code_coverage'] + time_binned_avg['code_coverage'].std(),
-                               alpha=0.2, color='blue', label='±1 Std Dev')
-        axes[0].set_xlabel('Time (seconds)')
-        axes[0].set_ylabel('Code Coverage (%)')
-        axes[0].set_title('Mean Code Coverage Over Time with Variability')
-        axes[0].legend()
-        axes[0].grid(True, alpha=0.3)
-        
-        axes[1].plot(time_binned_avg['time_bin_center'], time_binned_avg['branch_coverage'], 
-                       marker='s', linewidth=3, label='Mean Branch Coverage', color='red', alpha=0.8)
-        axes[1].fill_between(time_binned_avg['time_bin_center'],
-                               time_binned_avg['branch_coverage'] - time_binned_avg['branch_coverage'].std(),
-                               time_binned_avg['branch_coverage'] + time_binned_avg['branch_coverage'].std(),
-                               alpha=0.2, color='red', label='±1 Std Dev')
-        axes[1].set_xlabel('Time (seconds)')
-        axes[1].set_ylabel('Branch Coverage (%)')
-        axes[1].set_title('Mean Branch Coverage Over Time with Variability')
-        axes[1].legend()
-        axes[1].grid(True, alpha=0.3)
-
-def generate_time_based_report(stats: Dict[str, Any], output_dir: str = "coverage_report"):
-    """
-    Generate a text report with time-based statistics.
-    
-    Args:
-        stats (Dict[str, Any]): Statistics dictionary
-        output_dir (str): Directory to save report
-    """
-    os.makedirs(output_dir, exist_ok=True)
-    
-    report_path = os.path.join(output_dir, 'time_based_coverage_report.txt')
     with open(report_path, 'w') as f:
-        f.write("TIME-BASED COVERAGE ANALYSIS REPORT\n")
-        f.write("=" * 60 + "\n\n")
+        f.write("PERFORMANCE ANALYSIS WITH VARIABILITY\n")
+        f.write("=" * 55 + "\n\n")
         f.write(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
         
-        f.write("OVERALL STATISTICS:\n")
-        f.write("-" * 30 + "\n")
-        overall = stats['overall']
-        f.write(f"Mean Code Coverage: {overall['mean_code_coverage']:.2f}%\n")
-        f.write(f"Mean Branch Coverage: {overall['mean_branch_coverage']:.2f}%\n")
-        f.write(f"Min Code Coverage: {overall['min_code_coverage']:.2f}%\n")
-        f.write(f"Min Branch Coverage: {overall['min_branch_coverage']:.2f}%\n")
-        f.write(f"Max Code Coverage: {overall['max_code_coverage']:.2f}%\n")
-        f.write(f"Max Branch Coverage: {overall['max_branch_coverage']:.2f}%\n")
-        f.write(f"Std Code Coverage: {overall['std_code_coverage']:.2f}%\n")
-        f.write(f"Std Branch Coverage: {overall['std_branch_coverage']:.2f}%\n")
-        f.write(f"Total Analysis Time: {overall['total_analysis_time']:.2f} seconds\n\n")
-        
-        f.write("COVERAGE CONVERGENCE ANALYSIS:\n")
+        # Variability statistics
+        f.write("COVERAGE VARIABILITY BY ALGORITHM:\n")
         f.write("-" * 35 + "\n")
-        for contract, convergence in stats['coverage_convergence'].items():
-            f.write(f"Contract: {contract}\n")
-            f.write(f"  Max Code Coverage: {convergence['max_code_coverage']:.2f}%\n")
-            f.write(f"  Max Branch Coverage: {convergence['max_branch_coverage']:.2f}%\n")
-            if pd.notna(convergence['time_to_90pct_code']):
-                f.write(f"  Time to 90% of max code coverage: {convergence['time_to_90pct_code']:.2f}s\n")
-            else:
-                f.write(f"  Time to 90% of max code coverage: Not reached\n")
-            if pd.notna(convergence['time_to_90pct_branch']):
-                f.write(f"  Time to 90% of max branch coverage: {convergence['time_to_90pct_branch']:.2f}s\n")
-            else:
-                f.write(f"  Time to 90% of max branch coverage: Not reached\n")
-            f.write("\n")
         
-        f.write("COVERAGE BY TIME INTERVAL:\n")
+        if not smooth_df.empty:
+            variability_stats = smooth_df.groupby('algorithm').agg({
+                'mean_coverage': ['mean', 'max'],
+                'std_coverage': ['mean', 'max'],
+                'sample_size': 'mean'
+            }).round(2)
+            
+            f.write(variability_stats.to_string())
+            f.write("\n\n")
+        
+        # Final coverage with variability
+        f.write("FINAL COVERAGE STATISTICS:\n")
         f.write("-" * 30 + "\n")
-        f.write(stats['by_time_interval'].to_string())
+        
+        final_coverage = df.groupby(['algorithm', 'contract']).agg({
+            'instruction_coverage': 'last'
+        }).reset_index()
+        
+        final_stats = final_coverage.groupby('algorithm').agg({
+            'instruction_coverage': ['mean', 'std', 'min', 'max']
+        }).round(2)
+        
+        f.write(final_stats.to_string())
         f.write("\n\n")
-        
-        f.write("COVERAGE BY CONTRACT:\n")
-        f.write("-" * 30 + "\n")
-        f.write(stats['by_contract'].to_string())
-    
-    print(f"Report saved to: {report_path}")
 
-def analyze_coverage_over_time(folder_path: str, output_dir: str = "coverage_analysis", time_interval: float = 5.0):
+def create_conference_style_graphics_with_std(folder_path: str, output_dir: str = "conference_plots", 
+                                            time_interval: float = 2.0, max_time: float = 600.0):
     """
-    Main function to analyze coverage data over time from JSON files.
+    Main function to create conference-style graphics with standard deviation.
     
     Args:
-        folder_path (str): Path to folder containing JSON files
-        output_dir (str): Directory to save outputs
-        time_interval (float): Time interval for binning in seconds
+        folder_path: Path to folder containing JSON files (searched recursively)
+        output_dir: Output directory for plots and reports
+        time_interval: Time interval for sampling in seconds
+        max_time: Maximum time to show on X-axis (upper bound)
     """
-    print(f"Reading JSON files from: {folder_path}")
+    print(f"Creating conference-style graphics with STD from: {folder_path}")
+    print(f"X-axis upper bound: {max_time} seconds")
     
-    # Read JSON files
+    # Read JSON files recursively
     json_data = read_json_files(folder_path)
     
     if not json_data:
-        print("No valid JSON files found or no data to process.")
+        print("No valid JSON files found.")
         return
     
-    print(f"Successfully read {len(json_data)} JSON files")
-    
-    # Create DataFrame with time data
+    # Create DataFrame
     df = create_coverage_dataframe(json_data)
     
     if df.empty:
-        print("No coverage data found in the JSON files.")
+        print("No coverage data found.")
         return
     
-    print(f"Created DataFrame with {len(df)} records")
-    print(f"Contracts found: {df['contract'].unique().tolist()}")
-    print(f"Time range: {df['time_elapsed'].min():.2f}s to {df['time_elapsed'].max():.2f}s")
+    print(f"Analyzing data from {len(df['algorithm'].unique())} algorithms")
+    print(f"Algorithms found: {df['algorithm'].unique().tolist()}")
+    print(f"Time range in data: {df['time_elapsed'].min():.1f}s to {df['time_elapsed'].max():.1f}s")
     
-    # Create time-binned data
-    binned_df = create_time_binned_dataframe(df, time_interval)
-    print(f"Created time-binned data with {len(binned_df)} records")
+    # Create smooth time series with standard deviation
+    smooth_df = create_smooth_time_series_with_std(df, time_interval, max_time)
     
-    # Calculate time-based statistics
-    stats = calculate_time_based_statistics(df)
+    if smooth_df.empty:
+        print("No data available after time filtering.")
+        return
     
-    # Create time-based plots
-    print("Creating time-based visualizations...")
-    create_time_based_plots(df, binned_df, output_dir)
+    # Create conference-style plots with STD
+    create_conference_style_plots_with_std(df, smooth_df, output_dir, max_time)
     
-    # Generate report
-    generate_time_based_report(stats, output_dir)
+    # Generate enhanced report
+    generate_enhanced_report(df, smooth_df, output_dir)
     
-    # Save DataFrames to CSV
-    df.to_csv(os.path.join(output_dir, 'coverage_data_over_time.csv'), index=False)
-    binned_df.to_csv(os.path.join(output_dir, 'time_binned_coverage_data.csv'), index=False)
-    print(f"Data saved to CSV files in: {output_dir}")
+    # Save data
+    df.to_csv(os.path.join(output_dir, 'performance_data.csv'), index=False)
+    smooth_df.to_csv(os.path.join(output_dir, 'smooth_performance_with_std.csv'), index=False)
     
-    # Print summary
-    print("\nTIME-BASED SUMMARY:")
-    print(f"Overall Mean Code Coverage: {stats['overall']['mean_code_coverage']:.2f}%")
-    print(f"Overall Mean Branch Coverage: {stats['overall']['mean_branch_coverage']:.2f}%")
-    print(f"Total Analysis Time Range: {stats['overall']['total_analysis_time']:.2f} seconds")
+    print(f"\nConference-style graphics with STD created in: {output_dir}")
+    print("Files generated:")
+    print("  - instruction_coverage_with_std.png/.pdf (Main plot with variability)")
+    print("  - contract_size_comparison_with_std.png")
+    print("  - detailed_coverage_with_std.png")
+    print("  - performance_analysis_with_variability.txt")
+    print("  - smooth_performance_with_std.csv (Data with mean and std)")
     
-    print("\nCoverage Convergence Analysis:")
-    for contract, convergence in stats['coverage_convergence'].items():
-        print(f"  {contract}:")
-        if pd.notna(convergence['time_to_90pct_code']):
-            print(f"    Code coverage reached 90% in {convergence['time_to_90pct_code']:.2f}s")
-        if pd.notna(convergence['time_to_90pct_branch']):
-            print(f"    Branch coverage reached 90% in {convergence['time_to_90pct_branch']:.2f}s")
-    
-    print(f"\nAnalysis complete! Results saved in: {output_dir}")
-    
-    return df, binned_df, stats
+    return df, smooth_df
 
-# Example usage
+# Example usage with configurable max_time
 if __name__ == "__main__":
-    # Replace with your folder path
-    folder_path = "results/pso"
+    # You can change max_time to any value you want (e.g., 300, 600, 900 seconds)
+    folder_path = "results"
+    max_time_seconds = 300  # Change this value to set X-axis upper bound
     
-    # Run time-based analysis
-    df, binned_df, stats = analyze_coverage_over_time(folder_path, time_interval=2.0)
+    df, smooth_df = create_conference_style_graphics_with_std(
+        folder_path=folder_path,
+        output_dir="conference_results_with_std",
+        time_interval=2.0,
+        max_time=max_time_seconds
+    )
     
-    # You can also access the DataFrames for further analysis
     if df is not None:
-        print("\nDataFrame preview (with time data):")
-        print(df[['contract', 'time_elapsed', 'code_coverage', 'branch_coverage']].head())
+        print(f"\nAnalysis completed with X-axis limit: {max_time_seconds} seconds")
+        print("\nSample of smoothed data with STD:")
+        print(smooth_df[['algorithm', 'time_elapsed', 'mean_coverage', 'std_coverage']].head(10))

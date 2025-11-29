@@ -39,7 +39,7 @@ def invoke_fuzzer(task: Dict[str, Any]) -> Dict[str, Any]:
     # Build the command
     cmd = [
         "python3", "fuzzer/main.py",
-        "--source", "examples/" + source_file,
+        "--source", "dataset/curated/" + source_file,
         "--contract", contract_name,
         "-r", f"results/{extra_args[(extra_args.index('--algorithm')+1)]}/{source_file.replace('/', '-').replace('.sol', '.json')}"
     ]

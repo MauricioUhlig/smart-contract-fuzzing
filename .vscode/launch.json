@@ -116,7 +116,8 @@
             "args": [
                 "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}",
                 "--algorithm", "collaborative",
-                "--generations", "20",
+                // "--algorithm", "ga",
+                // "--generations", "100",
                 "--population-size", "40",
                 "--diversity-weight", "0.5",
                 "--novelty-threshold", "0.6",
@@ -124,11 +125,19 @@
                 "--probability-mutation", "0.35",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
+                "-t", "60",
 
                 "--diversity", "1"
-
+                // "--algorithm", "pyswarms",
 
             ]
+        },
+        {
+            "name": "Vulnerability Report",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/utils/vulnerability_report.py",
+            "console": "integratedTerminal"
         }
     ],
     "inputs": [

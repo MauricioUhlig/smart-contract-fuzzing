@@ -395,6 +395,7 @@ def launch_argument_parser():
 
     # Miscellaneous parameters
     parser.add_argument("-r", "--results", type=str, help="Folder or JSON file where results should be stored.")
+    parser.add_argument("--tag", type=str, help="Tag to prefix the result file name.")
     parser.add_argument("--seed", type=float, help="Initialize the random number generator with a given seed.")
     parser.add_argument("--cfg", help="Build control-flow graph and highlight code coverage.", action="store_true")
     parser.add_argument("--rpc-host", help="Ethereum client RPC hostname.", action="store", dest="rpc_host", type=str)

@@ -105,6 +105,7 @@ def extract_annotations_and_contracts(file_path: str) -> Dict[str, Any]:
                 report_match = re.search(r'//\s*<yes>\s*<report>\s*([^\s]+)', line)
                 if report_match:
                     report_type = report_match.group(1).strip()
+                    report_type = _normalize_vulnerability_name(report_type)
                     # Find which contract this line belongs to
                     for contract in contracts_info:
                         next_contract_start = None
@@ -164,6 +165,24 @@ def extract_annotations_and_contracts(file_path: str) -> Dict[str, Any]:
         result["error"] = str(e)
     
     return result
+
+def _normalize_vulnerability_name(name: str) -> str:
+    match (name):
+        case ("ARITHMETIC"):
+            return "INTEGER_OVERFLOW" 
+        case ("FRONT_RUNNING"):
+            return "TRANSACTION_ORDER_DEPENDENCY"
+        case ("BAD_RANDOMNESS"):
+            return "BLOCK_DEPENDENCY"
+        case ("TIME"):
+            return "BLOCK_DEPENDENCY"
+        case ("TIME_MANIPULATION"):
+            return "BLOCK_DEPENDENCY"
+        case ("UNCHECKED_LL_CALLS"):
+            return "UNHANDLED_EXCEPTION"
+        
+        case (_):
+            return name
 
 def get_solidity_contracts_with_annotations(folder_path: str) -> List[Dict[str, Any]]:
     """

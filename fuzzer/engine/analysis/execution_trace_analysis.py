@@ -743,6 +743,11 @@ class ExecutionTraceAnalyzer(OnTheFlyAnalysis):
         self.env.results["address_under_test"] = self.env.population.indv_generator.contract
         self.env.results["seed"] = self.env.seed
 
+        # Save the executuon metadata
+        self.env.results["tag"] = self.env.args.tag
+        self.env.results["algorithm"] = self.env.args.algorithm
+
+
         #  Write results to file
         if self.env.args.results:
             results = {}

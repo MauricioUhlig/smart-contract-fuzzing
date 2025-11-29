@@ -1,66 +1,251 @@
 [
     {
-        "file": "Harvey/memory-access-vulnerability-fuzzing-example.sol",
+        "file": "unprotected_selfdestruct/WalletLibrary.sol",
         "contracts": [
             {
-                "name": "Wallet"
-            }
-        ]
-    },
-    {
-        "file": "Harvey/input-prediction-fuzzing-example.sol",
-        "contracts": [
-            {
-                "name": "Baz"
-            }
-        ]
-    },
-    {
-        "file": "Harvey/demand-driven-sequence-fuzzing-example.sol",
-        "contracts": [
-            {
-                "name": "Foo"
-            }
-        ]
-    },
-    {
-        "file": "Rodler/manual-lock.sol",
-        "contracts": [
-            {
-                "name": "VulnBank"
+                "name": "WalletEvents"
             },
             {
-                "name": "VulnBankNoLock"
+                "name": "WalletAbi"
             },
             {
-                "name": "VulnBankBuggyLock"
+                "name": "WalletLibrary"
+            }
+        ]
+    },
+    {
+        "file": "unprotected_selfdestruct/simple_suicide.sol",
+        "contracts": [
+            {
+                "name": "SimpleSuicide"
+            }
+        ]
+    },
+    {
+        "file": "unprotected_selfdestruct/suicide_multitx_infeasible.sol",
+        "contracts": [
+            {
+                "name": "SuicideMultiTxFeasible"
+            }
+        ]
+    },
+    {
+        "file": "unprotected_selfdestruct/suicide_multitx_feasible.sol",
+        "contracts": [
+            {
+                "name": "SuicideMultiTxFeasible"
+            }
+        ]
+    },
+    {
+        "file": "block_dependency/old_blockhash.sol",
+        "contracts": [
+            {
+                "name": "PredictTheBlockHashChallenge",
+                "annotations": {
+                    "vulnerable_lines": [
+                        35
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "block_dependency/governmental_survey.sol",
+        "contracts": [
+            {
+                "name": "Governmental",
+                "annotations": {
+                    "vulnerable_lines": [
+                        27
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
             },
             {
-                "name": "VulnBankSecureLock"
+                "name": "Attacker"
             }
         ]
     },
     {
-        "file": "Rodler/unconditional_reentrancy.sol",
+        "file": "block_dependency/lottopollo.sol",
         "contracts": [
             {
-                "name": "keepMyEther"
+                "name": "lottopollo",
+                "annotations": {
+                    "vulnerable_lines": [
+                        13,
+                        27
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-114/eth_tx_order_dependence_minimal.sol",
+        "file": "block_dependency/lottery.sol",
         "contracts": [
             {
-                "name": "EthTxOrderDependenceMinimal"
+                "name": "Lottery",
+                "annotations": {
+                    "vulnerable_lines": [
+                        38,
+                        42
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-114/ERC20.sol",
+        "file": "block_dependency/blackjack.sol",
         "contracts": [
+            {
+                "name": "BlackJack",
+                "annotations": {
+                    "vulnerable_lines": [
+                        21
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            },
+            {
+                "name": "Deck",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17,
+                        19
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "block_dependency/random_number_generator.sol",
+        "contracts": [
+            {
+                "name": "RandomNumberGenerator",
+                "annotations": {
+                    "vulnerable_lines": [
+                        12,
+                        18,
+                        20,
+                        22
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "block_dependency/lucky_doubler.sol",
+        "contracts": [
+            {
+                "name": "LuckyDoubler",
+                "annotations": {
+                    "vulnerable_lines": [
+                        127,
+                        128,
+                        129,
+                        130,
+                        132
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "block_dependency/ether_lotto.sol",
+        "contracts": [
+            {
+                "name": "EtherLotto",
+                "annotations": {
+                    "vulnerable_lines": [
+                        43
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "block_dependency/etheraffle.sol",
+        "contracts": [
+            {
+                "name": "Ethraffle_v4b",
+                "annotations": {
+                    "vulnerable_lines": [
+                        49,
+                        99,
+                        101,
+                        103,
+                        114,
+                        158
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "block_dependency/smart_billions.sol",
+        "contracts": [
+            {
+                "name": "ERC20Basic"
+            },
             {
                 "name": "ERC20"
+            },
+            {
+                "name": "BasicToken"
+            },
+            {
+                "name": "StandardToken"
+            },
+            {
+                "name": "SmartBillions",
+                "annotations": {
+                    "vulnerable_lines": [
+                        523,
+                        560,
+                        700,
+                        702,
+                        704,
+                        706,
+                        708,
+                        710,
+                        712,
+                        714,
+                        716,
+                        718
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
             },
             {
                 "name": "SafeMath"
@@ -68,15 +253,1658 @@
         ]
     },
     {
-        "file": "SWC/swc-101/overflow_simple_add.sol",
+        "file": "block_dependency/roulette.sol",
         "contracts": [
             {
-                "name": "Overflow_Add"
+                "name": "Roulette",
+                "annotations": {
+                    "vulnerable_lines": [
+                        18,
+                        20
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-101/BECToken.sol",
+        "file": "block_dependency/guess_the_random_number.sol",
+        "contracts": [
+            {
+                "name": "GuessTheRandomNumberChallenge",
+                "annotations": {
+                    "vulnerable_lines": [
+                        15
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "block_dependency/timed_crowdsale.sol",
+        "contracts": [
+            {
+                "name": "TimedCrowdsale",
+                "annotations": {
+                    "vulnerable_lines": [
+                        13
+                    ],
+                    "reports": [
+                        "BLOCK_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/wallet_01_ok.sol",
+        "contracts": [
+            {
+                "name": "Wallet"
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/tokensalechallenge.sol",
+        "contracts": [
+            {
+                "name": "TokenSaleChallenge"
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/wallet_02_refund_nosub.sol",
+        "contracts": [
+            {
+                "name": "Wallet"
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/multiowned_not_vulnerable.sol",
+        "contracts": [
+            {
+                "name": "MultiOwnable"
+            },
+            {
+                "name": "TestContract"
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/wallet_03_wrong_constructor.sol",
+        "contracts": [
+            {
+                "name": "Wallet"
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/rubixi.sol",
+        "contracts": [
+            {
+                "name": "Rubixi"
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/simple_ether_drain.sol",
+        "contracts": [
+            {
+                "name": "SimpleEtherDrain"
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/wallet_04_confused_sign.sol",
+        "contracts": [
+            {
+                "name": "Wallet"
+            }
+        ]
+    },
+    {
+        "file": "leaking_ether/multiowned_vulnerable.sol",
+        "contracts": [
+            {
+                "name": "MultiOwnable"
+            },
+            {
+                "name": "TestContract"
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x663e4229142a27f00bafb5d087e1e730648314c3.sol",
+        "contracts": [
+            {
+                "name": "ERC20"
+            },
+            {
+                "name": "Ownable"
+            },
+            {
+                "name": "ERC721"
+            },
+            {
+                "name": "GeneScienceInterface"
+            },
+            {
+                "name": "PandaAccessControl"
+            },
+            {
+                "name": "PandaBase"
+            },
+            {
+                "name": "ERC721Metadata"
+            },
+            {
+                "name": "PandaOwnership"
+            },
+            {
+                "name": "PandaBreeding"
+            },
+            {
+                "name": "ClockAuctionBase"
+            },
+            {
+                "name": "Pausable"
+            },
+            {
+                "name": "ClockAuction"
+            },
+            {
+                "name": "SiringClockAuction"
+            },
+            {
+                "name": "SaleClockAuction"
+            },
+            {
+                "name": "SaleClockAuctionERC20"
+            },
+            {
+                "name": "PandaAuction"
+            },
+            {
+                "name": "PandaMinting"
+            },
+            {
+                "name": "PandaCore",
+                "annotations": {
+                    "vulnerable_lines": [
+                        1152,
+                        1496,
+                        2467
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x3e013fc32a54c4c5b6991ba539dcd0ec4355c859.sol",
+        "contracts": [
+            {
+                "name": "MultiplicatorX4",
+                "annotations": {
+                    "vulnerable_lines": [
+                        29
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x3a0e9acd953ffc0dd18d63603488846a6b8b2b01.sol",
+        "contracts": [
+            {
+                "name": "Ownable"
+            },
+            {
+                "name": "Token"
+            },
+            {
+                "name": "TokenBank",
+                "annotations": {
+                    "vulnerable_lines": [
+                        44,
+                        97
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xb0510d68f210b7db66e8c7c814f22680f2b8d1d6.sol",
+        "contracts": [
+            {
+                "name": "Splitter",
+                "annotations": {
+                    "vulnerable_lines": [],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            },
+            {
+                "name": "Puppet",
+                "annotations": {
+                    "vulnerable_lines": [
+                        69,
+                        71,
+                        73,
+                        75
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            },
+            {
+                "name": "SafeMath",
+                "annotations": {
+                    "vulnerable_lines": [
+                        102
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x958a8f594101d2c0485a52319f29b2647f2ebc06.sol",
+        "contracts": [
+            {
+                "name": "Owned"
+            },
+            {
+                "name": "Marriage",
+                "annotations": {
+                    "vulnerable_lines": [
+                        55
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x84d9ec85c9c568eb332b7226a8f826d897e0a4a8.sol",
+        "contracts": [
+            {
+                "name": "Owned"
+            },
+            {
+                "name": "WedIndex",
+                "annotations": {
+                    "vulnerable_lines": [
+                        56
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xdb1c55f6926e7d847ddf8678905ad871a68199d2.sol",
+        "contracts": [
+            {
+                "name": "FreeEth",
+                "annotations": {
+                    "vulnerable_lines": [
+                        39
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xd2018bfaa266a9ec0a1a84b061640faa009def76.sol",
+        "contracts": [
+            {
+                "name": "Pie",
+                "annotations": {
+                    "vulnerable_lines": [
+                        44
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x7d09edb07d23acb532a82be3da5c17d9d85806b4.sol",
+        "contracts": [
+            {
+                "name": "PoCGame",
+                "annotations": {
+                    "vulnerable_lines": [
+                        198,
+                        210
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            },
+            {
+                "name": "ERC20Interface"
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x3f2ef511aa6e75231e4deafc7a3d2ecab3741de2.sol",
+        "contracts": [
+            {
+                "name": "WhaleGiveaway2",
+                "annotations": {
+                    "vulnerable_lines": [
+                        45
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x78c2a1e91b52bca4130b6ed9edd9fbcfd4671c37.sol",
+        "contracts": [
+            {
+                "name": "WhaleGiveaway1",
+                "annotations": {
+                    "vulnerable_lines": [
+                        45
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xf2570186500a46986f3139f65afedc2afe4f445d.sol",
+        "contracts": [
+            {
+                "name": "RealOldFuckMaker",
+                "annotations": {
+                    "vulnerable_lines": [
+                        18
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xa1fceeff3acc57d257b917e30c4df661401d6431.sol",
+        "contracts": [
+            {
+                "name": "AirDropContract",
+                "annotations": {
+                    "vulnerable_lines": [
+                        31
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xb37f18af15bafb869a065b61fc83cfc44ed9cc27.sol",
+        "contracts": [
+            {
+                "name": "SimpleWallet",
+                "annotations": {
+                    "vulnerable_lines": [
+                        33
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xf29ebe930a539a60279ace72c707cba851a57707.sol",
+        "contracts": [
+            {
+                "name": "B",
+                "annotations": {
+                    "vulnerable_lines": [
+                        16
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x4051334adc52057aca763453820cb0e045076ef3.sol",
+        "contracts": [
+            {
+                "name": "airdrop",
+                "annotations": {
+                    "vulnerable_lines": [
+                        16
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xbaa3de6504690efb064420d89e871c27065cdd52.sol",
+        "contracts": [
+            {
+                "name": "Proxy"
+            },
+            {
+                "name": "VaultProxy",
+                "annotations": {
+                    "vulnerable_lines": [
+                        14
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x89c1b3807d4c67df034fffb62f3509561218d30b.sol",
+        "contracts": [
+            {
+                "name": "TownCrier",
+                "annotations": {
+                    "vulnerable_lines": [
+                        162,
+                        175,
+                        180,
+                        192
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xb620cee6b52f96f3c6b253e6eea556aa2d214a99.sol",
+        "contracts": [
+            {
+                "name": "DrainMe",
+                "annotations": {
+                    "vulnerable_lines": [
+                        100,
+                        106,
+                        133
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x5aa88d2901c68fda244f1d0584400368d2c8e739.sol",
+        "contracts": [
+            {
+                "name": "MultiplicatorX3",
+                "annotations": {
+                    "vulnerable_lines": [
+                        29
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/mishandled.sol",
+        "contracts": [
+            {
+                "name": "SendBack",
+                "annotations": {
+                    "vulnerable_lines": [
+                        14
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x70f9eddb3931491aab1aeafbc1e7f1ca2a012db4.sol",
+        "contracts": [
+            {
+                "name": "HomeyJar",
+                "annotations": {
+                    "vulnerable_lines": [
+                        29
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xbebbfe5b549f5db6e6c78ca97cac19d1fb03082c.sol",
+        "contracts": [
+            {
+                "name": "Proxy"
+            },
+            {
+                "name": "VaultProxy",
+                "annotations": {
+                    "vulnerable_lines": [
+                        14
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xe82f0742a71a02b9e9ffc142fdcb6eb1ed06fb87.sol",
+        "contracts": [
+            {
+                "name": "Freebie",
+                "annotations": {
+                    "vulnerable_lines": [
+                        39
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x627fa62ccbb1c1b04ffaecd72a53e37fc0e17839.sol",
+        "contracts": [
+            {
+                "name": "Ownable"
+            },
+            {
+                "name": "Token"
+            },
+            {
+                "name": "TokenBank",
+                "annotations": {
+                    "vulnerable_lines": [
+                        44
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x524960d55174d912768678d8c606b4d50b79d7b1.sol",
+        "contracts": [
+            {
+                "name": "Centra4",
+                "annotations": {
+                    "vulnerable_lines": [
+                        21
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/king_of_the_ether_throne.sol",
+        "contracts": [
+            {
+                "name": "KingOfTheEtherThrone",
+                "annotations": {
+                    "vulnerable_lines": [
+                        110,
+                        118,
+                        132,
+                        174
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x4a66ad0bca2d700f11e1f2fc2c106f7d3264504c.sol",
+        "contracts": [
+            {
+                "name": "EBU",
+                "annotations": {
+                    "vulnerable_lines": [
+                        19
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x19cf8481ea15427a98ba3cdd6d9e14690011ab10.sol",
+        "contracts": [
+            {
+                "name": "MigrationAgent"
+            },
+            {
+                "name": "ERC20"
+            },
+            {
+                "name": "SafeMath"
+            },
+            {
+                "name": "StandardToken"
+            },
+            {
+                "name": "daoPOLSKAtokens",
+                "annotations": {
+                    "vulnerable_lines": [
+                        439,
+                        465
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            },
+            {
+                "name": "tokenRecipient"
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x9d06cbafa865037a01d322d3f4222fa3e04e5488.sol",
+        "contracts": [
+            {
+                "name": "Delta",
+                "annotations": {
+                    "vulnerable_lines": [
+                        54,
+                        65
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/etherpot_lotto.sol",
+        "contracts": [
+            {
+                "name": "Lotto",
+                "annotations": {
+                    "vulnerable_lines": [
+                        109,
+                        141
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/unchecked_return_value.sol",
+        "contracts": [
+            {
+                "name": "ReturnValue",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x2972d548497286d18e92b5fa1f8f9139e5653fd2.sol",
+        "contracts": [
+            {
+                "name": "demo",
+                "annotations": {
+                    "vulnerable_lines": [
+                        14
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x610495793564aed0f9c7fc48dc4c7c9151d34fd6.sol",
+        "contracts": [
+            {
+                "name": "SimpleWallet",
+                "annotations": {
+                    "vulnerable_lines": [
+                        33
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x8fd1e427396ddb511533cf9abdbebd0a7e08da35.sol",
+        "contracts": [
+            {
+                "name": "Ownable"
+            },
+            {
+                "name": "Token"
+            },
+            {
+                "name": "TokenBank",
+                "annotations": {
+                    "vulnerable_lines": [
+                        44,
+                        97
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xd5967fed03e85d1cce44cab284695b41bc675b5c.sol",
+        "contracts": [
+            {
+                "name": "demo",
+                "annotations": {
+                    "vulnerable_lines": [
+                        16
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x4b71ad9c1a84b9b643aa54fdd66e2dec96e8b152.sol",
+        "contracts": [
+            {
+                "name": "airPort",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x806a6bd219f162442d992bdc4ee6eba1f2c5a707.sol",
+        "contracts": [
+            {
+                "name": "Pie",
+                "annotations": {
+                    "vulnerable_lines": [
+                        44
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xa46edd6a9a93feec36576ee5048146870ea2c3ae.sol",
+        "contracts": [
+            {
+                "name": "EBU",
+                "annotations": {
+                    "vulnerable_lines": [
+                        16
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x39cfd754c85023648bf003bea2dd498c5612abfa.sol",
+        "contracts": [
+            {
+                "name": "Ownable"
+            },
+            {
+                "name": "Token"
+            },
+            {
+                "name": "TokenBank",
+                "annotations": {
+                    "vulnerable_lines": [
+                        44,
+                        97
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xb11b2fed6c9354f7aa2f658d3b4d7b31d8a13b77.sol",
+        "contracts": [
+            {
+                "name": "Proxy"
+            },
+            {
+                "name": "DepositProxy",
+                "annotations": {
+                    "vulnerable_lines": [
+                        14
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x52d2e0f9b01101a59b38a3d05c80b7618aeed984.sol",
+        "contracts": [
+            {
+                "name": "Token"
+            },
+            {
+                "name": "EtherGet",
+                "annotations": {
+                    "vulnerable_lines": [
+                        27
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xe09b1ab8111c2729a76f16de96bc86a7af837928.sol",
+        "contracts": [
+            {
+                "name": "FiftyFlip",
+                "annotations": {
+                    "vulnerable_lines": [
+                        150
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            },
+            {
+                "name": "ERC20Interface"
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xe894d54dca59cb53fe9cbc5155093605c7068220.sol",
+        "contracts": [
+            {
+                "name": "airDrop",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x7a4349a749e59a5736efb7826ee3496a2dfd5489.sol",
+        "contracts": [
+            {
+                "name": "WhaleGiveaway1",
+                "annotations": {
+                    "vulnerable_lines": [
+                        44
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x07f7ecb66d788ab01dc93b9b71a88401de7d0f2e.sol",
+        "contracts": [
+            {
+                "name": "PoCGame",
+                "annotations": {
+                    "vulnerable_lines": [
+                        201,
+                        213
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            },
+            {
+                "name": "ERC20Interface"
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xf70d589d76eebdd7c12cc5eec99f8f6fa4233b9e.sol",
+        "contracts": [
+            {
+                "name": "WhaleGiveaway2",
+                "annotations": {
+                    "vulnerable_lines": [
+                        45
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xec329ffc97d75fe03428ae155fc7793431487f63.sol",
+        "contracts": [
+            {
+                "name": "Owned"
+            },
+            {
+                "name": "Token"
+            },
+            {
+                "name": "TokenSender",
+                "annotations": {
+                    "vulnerable_lines": [
+                        30
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xe4eabdca81e31d9acbc4af76b30f532b6ed7f3bf.sol",
+        "contracts": [
+            {
+                "name": "Honey",
+                "annotations": {
+                    "vulnerable_lines": [
+                        44
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0xb7c5c5aa4d42967efe906e1b66cb8df9cebf04f7.sol",
+        "contracts": [
+            {
+                "name": "keepMyEther",
+                "annotations": {
+                    "vulnerable_lines": [
+                        25
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/0x0cbe050f75bc8f8c2d6c0d249fea125fd6e1acc9.sol",
+        "contracts": [
+            {
+                "name": "Caller",
+                "annotations": {
+                    "vulnerable_lines": [
+                        12
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unhandled_exception/lotto.sol",
+        "contracts": [
+            {
+                "name": "Lotto",
+                "annotations": {
+                    "vulnerable_lines": [
+                        20,
+                        27
+                    ],
+                    "reports": [
+                        "UNHANDLED_EXCEPTION"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/modifier_reentrancy.sol",
+        "contracts": [
+            {
+                "name": "ModifierEntrancy",
+                "annotations": {
+                    "vulnerable_lines": [],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            },
+            {
+                "name": "Bank",
+                "annotations": {
+                    "vulnerable_lines": [
+                        15
+                    ],
+                    "reports": []
+                }
+            },
+            {
+                "name": "attack"
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/etherstore.sol",
+        "contracts": [
+            {
+                "name": "EtherStore",
+                "annotations": {
+                    "vulnerable_lines": [
+                        27
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/reentrance.sol",
+        "contracts": [
+            {
+                "name": "Reentrance",
+                "annotations": {
+                    "vulnerable_lines": [
+                        24
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/reentrancy_insecure.sol",
+        "contracts": [
+            {
+                "name": "Reentrancy_insecure",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/reentrancy_bonus.sol",
+        "contracts": [
+            {
+                "name": "Reentrancy_bonus",
+                "annotations": {
+                    "vulnerable_lines": [
+                        28
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/etherbank.sol",
+        "contracts": [
+            {
+                "name": "EtherBank",
+                "annotations": {
+                    "vulnerable_lines": [
+                        21
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/reentrancy_dao.sol",
+        "contracts": [
+            {
+                "name": "ReentrancyDAO",
+                "annotations": {
+                    "vulnerable_lines": [
+                        18
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/reentrancy_cross_function.sol",
+        "contracts": [
+            {
+                "name": "Reentrancy_cross_function",
+                "annotations": {
+                    "vulnerable_lines": [
+                        24
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/reentrancy_simple.sol",
+        "contracts": [
+            {
+                "name": "Reentrance",
+                "annotations": {
+                    "vulnerable_lines": [
+                        24
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/spank_chain_payment.sol",
+        "contracts": [
+            {
+                "name": "Token"
+            },
+            {
+                "name": "StandardToken"
+            },
+            {
+                "name": "HumanStandardToken"
+            },
+            {
+                "name": "LedgerChannel",
+                "annotations": {
+                    "vulnerable_lines": [
+                        426,
+                        430
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            },
+            {
+                "name": "ECTools"
+            }
+        ]
+    },
+    {
+        "file": "reentrancy/simple_dao.sol",
+        "contracts": [
+            {
+                "name": "SimpleDAO",
+                "annotations": {
+                    "vulnerable_lines": [
+                        19
+                    ],
+                    "reports": [
+                        "REENTRANCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/sha_of_sha_collision.sol",
+        "contracts": [
+            {
+                "name": "ShaOfShaCollission"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/runtime_user_input_call.sol",
+        "contracts": [
+            {
+                "name": "RuntimeUserInputCall"
+            },
+            {
+                "name": "B"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/sha_of_sha_2_mappings.sol",
+        "contracts": [
+            {
+                "name": "ShaOfSha2Mappings"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/constructor_create_modifiable.sol",
+        "contracts": [
+            {
+                "name": "ContructorCreateModifiable"
+            },
+            {
+                "name": "B"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/token-with-backdoor.sol",
+        "contracts": [
+            {
+                "name": "Token"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/assert_constructor.sol",
+        "contracts": [
+            {
+                "name": "AssertConstructor"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/mapping_performance_1.sol",
+        "contracts": [
+            {
+                "name": "MappingPerformance1set"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/gas_model_fixed.sol",
+        "contracts": [
+            {
+                "name": "GasModelFixed"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/gas_model.sol",
+        "contracts": [
+            {
+                "name": "GasModel"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/constructor_create.sol",
+        "contracts": [
+            {
+                "name": "ConstructorCreate"
+            },
+            {
+                "name": "B"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/mapping_perfomance_2.sol",
+        "contracts": [
+            {
+                "name": "MappingPerformance2sets"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/runtime_create_user_input.sol",
+        "contracts": [
+            {
+                "name": "RuntimeCreateUserInput"
+            },
+            {
+                "name": "B"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/sha_of_sha_concrete.sol",
+        "contracts": [
+            {
+                "name": "ShaOfShaConcrete"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/assert_multitx_2.sol",
+        "contracts": [
+            {
+                "name": "AssertMultiTx2"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/return_memory.sol",
+        "contracts": [
+            {
+                "name": "ReturnMemory"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/assert_multitx_1.sol",
+        "contracts": [
+            {
+                "name": "AssertMultiTx1"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/two_mapppings.sol",
+        "contracts": [
+            {
+                "name": "TwoMappings"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/out-of-bounds-exception.sol",
+        "contracts": [
+            {
+                "name": "OutOfBoundsException"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/assert_minimal.sol",
+        "contracts": [
+            {
+                "name": "AssertMinimal"
+            }
+        ]
+    },
+    {
+        "file": "assertion_failure/constructor_create_argument.sol",
+        "contracts": [
+            {
+                "name": "ConstructorCreateArgument"
+            },
+            {
+                "name": "B"
+            }
+        ]
+    },
+    {
+        "file": "transaction_order_dependency/eth_tx_order_dependence_minimal.sol",
+        "contracts": [
+            {
+                "name": "EthTxOrderDependenceMinimal",
+                "annotations": {
+                    "vulnerable_lines": [
+                        23,
+                        31
+                    ],
+                    "reports": [
+                        "TRANSACTION_ORDER_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "transaction_order_dependency/ERC20.sol",
+        "contracts": [
+            {
+                "name": "ERC20",
+                "annotations": {
+                    "vulnerable_lines": [
+                        110,
+                        113
+                    ],
+                    "reports": [
+                        "TRANSACTION_ORDER_DEPENDENCY"
+                    ]
+                }
+            },
+            {
+                "name": "SafeMath"
+            }
+        ]
+    },
+    {
+        "file": "transaction_order_dependency/odds_and_evens.sol",
+        "contracts": [
+            {
+                "name": "OddsAndEvens",
+                "annotations": {
+                    "vulnerable_lines": [
+                        25,
+                        28
+                    ],
+                    "reports": [
+                        "TRANSACTION_ORDER_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "transaction_order_dependency/FindThisHash.sol",
+        "contracts": [
+            {
+                "name": "FindThisHash",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "TRANSACTION_ORDER_DEPENDENCY"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "locking_ether/Bitway.sol",
+        "contracts": [
+            {
+                "name": "ERC20"
+            },
+            {
+                "name": "Bitway"
+            },
+            {
+                "name": "SafeMath"
+            }
+        ]
+    },
+    {
+        "file": "locking_ether/IWCEToken.sol",
+        "contracts": [
+            {
+                "name": "IWCEToken"
+            },
+            {
+                "name": "SafeMath"
+            }
+        ]
+    },
+    {
+        "file": "locking_ether/SwarmRedistribution.sol",
+        "contracts": [
+            {
+                "name": "RES"
+            },
+            {
+                "name": "SwarmRedistribution"
+            }
+        ]
+    },
+    {
+        "file": "locking_ether/EscrowMyEtherEntityDB.sol",
+        "contracts": [
+            {
+                "name": "EscrowMyEtherEntityDB"
+            }
+        ]
+    },
+    {
+        "file": "locking_ether/EliteCoin.sol",
+        "contracts": [
+            {
+                "name": "ERC20Basic"
+            },
+            {
+                "name": "BasicToken"
+            },
+            {
+                "name": "ERC20"
+            },
+            {
+                "name": "StandardToken"
+            },
+            {
+                "name": "EliteCoin"
+            },
+            {
+                "name": "SafeMath"
+            }
+        ]
+    },
+    {
+        "file": "integer_overflows/overflow_simple_add.sol",
+        "contracts": [
+            {
+                "name": "Overflow_Add",
+                "annotations": {
+                    "vulnerable_lines": [
+                        14
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "integer_overflows/BECToken.sol",
         "contracts": [
             {
                 "name": "ERC20Basic"
@@ -100,7 +1928,15 @@
                 "name": "PausableToken"
             },
             {
-                "name": "BecToken"
+                "name": "BecToken",
+                "annotations": {
+                    "vulnerable_lines": [
+                        264
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
             },
             {
                 "name": "SafeMath"
@@ -108,55 +1944,223 @@
         ]
     },
     {
-        "file": "SWC/swc-101/integer_overflow_multitx_onefunc_feasible.sol",
+        "file": "integer_overflows/overflow_single_tx.sol",
         "contracts": [
             {
-                "name": "IntegerOverflowMultiTxOneFuncFeasible"
+                "name": "IntegerOverflowSingleTransaction",
+                "annotations": {
+                    "vulnerable_lines": [
+                        18,
+                        24,
+                        30,
+                        36,
+                        42,
+                        48
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-101/integer_overflow_minimal_fixed.sol",
+        "file": "integer_overflows/integer_overflow_multitx_onefunc_feasible.sol",
         "contracts": [
             {
-                "name": "IntegerOverflowMinimal"
+                "name": "IntegerOverflowMultiTxOneFuncFeasible",
+                "annotations": {
+                    "vulnerable_lines": [
+                        22
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-101/overflow_simple_add_fixed.sol",
+        "file": "integer_overflows/integer_overflow_benign_1.sol",
         "contracts": [
             {
-                "name": "Overflow_Add"
+                "name": "IntegerOverflowBenign1",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-101/integer_overflow_mapping_sym_1.sol",
+        "file": "integer_overflows/tokensalechallenge.sol",
         "contracts": [
             {
-                "name": "IntegerOverflowMappingSym1"
+                "name": "TokenSaleChallenge",
+                "annotations": {
+                    "vulnerable_lines": [
+                        23,
+                        25,
+                        33
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-101/integer_overflow_mapping_sym_1_fixed.sol",
+        "file": "integer_overflows/integer_overflow_add.sol",
         "contracts": [
             {
-                "name": "IntegerOverflowMappingSym1"
+                "name": "IntegerOverflowAdd",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-101/integer_overflow_minimal.sol",
+        "file": "integer_overflows/integer_overflow_1.sol",
         "contracts": [
             {
-                "name": "IntegerOverflowMinimal"
+                "name": "Overflow",
+                "annotations": {
+                    "vulnerable_lines": [
+                        14
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
             }
         ]
     },
     {
-        "file": "SWC/swc-112/proxy_fixed.sol",
+        "file": "integer_overflows/timelock.sol",
+        "contracts": [
+            {
+                "name": "TimeLock",
+                "annotations": {
+                    "vulnerable_lines": [
+                        22
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "integer_overflows/integer_overflow_mul.sol",
+        "contracts": [
+            {
+                "name": "IntegerOverflowMul",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "integer_overflows/integer_overflow_multitx_multifunc_feasible.sol",
+        "contracts": [
+            {
+                "name": "IntegerOverflowMultiTxMultiFuncFeasible",
+                "annotations": {
+                    "vulnerable_lines": [
+                        25
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "integer_overflows/integer_overflow_mapping_sym_1.sol",
+        "contracts": [
+            {
+                "name": "IntegerOverflowMappingSym1",
+                "annotations": {
+                    "vulnerable_lines": [
+                        16
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "integer_overflows/insecure_transfer.sol",
+        "contracts": [
+            {
+                "name": "IntegerOverflowAdd",
+                "annotations": {
+                    "vulnerable_lines": [
+                        18
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "integer_overflows/token.sol",
+        "contracts": [
+            {
+                "name": "Token",
+                "annotations": {
+                    "vulnerable_lines": [
+                        20,
+                        22
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "integer_overflows/integer_overflow_minimal.sol",
+        "contracts": [
+            {
+                "name": "IntegerOverflowMinimal",
+                "annotations": {
+                    "vulnerable_lines": [
+                        17
+                    ],
+                    "reports": [
+                        "INTEGER_OVERFLOW"
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "file": "unsafe_delegatecall/proxy_fixed.sol",
         "contracts": [
             {
                 "name": "Proxy"
@@ -164,7 +2168,7 @@
         ]
     },
     {
-        "file": "SWC/swc-112/proxy.sol",
+        "file": "unsafe_delegatecall/proxy.sol",
         "contracts": [
             {
                 "name": "Proxy"
@@ -172,252 +2176,10 @@
         ]
     },
     {
-        "file": "SWC/swc-112/proxy_pattern_false_positive.sol",
+        "file": "unsafe_delegatecall/proxy_pattern_false_positive.sol",
         "contracts": [
             {
                 "name": "proxy"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/wallet_01_ok.sol",
-        "contracts": [
-            {
-                "name": "Wallet"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/tokensalechallenge.sol",
-        "contracts": [
-            {
-                "name": "TokenSaleChallenge"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/wallet_02_refund_nosub.sol",
-        "contracts": [
-            {
-                "name": "Wallet"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/multiowned_not_vulnerable.sol",
-        "contracts": [
-            {
-                "name": "MultiOwnable"
-            },
-            {
-                "name": "TestContract"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/wallet_03_wrong_constructor.sol",
-        "contracts": [
-            {
-                "name": "Wallet"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/rubixi.sol",
-        "contracts": [
-            {
-                "name": "Rubixi"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/simple_ether_drain.sol",
-        "contracts": [
-            {
-                "name": "SimpleEtherDrain"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/wallet_04_confused_sign.sol",
-        "contracts": [
-            {
-                "name": "Wallet"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-105/multiowned_vulnerable.sol",
-        "contracts": [
-            {
-                "name": "MultiOwnable"
-            },
-            {
-                "name": "TestContract"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-116/timed_crowdsale.sol",
-        "contracts": [
-            {
-                "name": "TimedCrowdsale"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-106/WalletLibrary.sol",
-        "contracts": [
-            {
-                "name": "WalletEvents"
-            },
-            {
-                "name": "WalletAbi"
-            },
-            {
-                "name": "WalletLibrary"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-106/simple_suicide.sol",
-        "contracts": [
-            {
-                "name": "SimpleSuicide"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-106/suicide_multitx_infeasible.sol",
-        "contracts": [
-            {
-                "name": "SuicideMultiTxFeasible"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-106/suicide_multitx_feasible.sol",
-        "contracts": [
-            {
-                "name": "SuicideMultiTxFeasible"
-            }
-        ]
-    },
-    {
-        "file": "SWC/swc-104/unchecked_return_value.sol",
-        "contracts": [
-            {
-                "name": "ReturnValue"
-            }
-        ]
-    },
-    {
-        "file": "TokenSale/contracts/Migrations.sol",
-        "contracts": [
-            {
-                "name": "Migrations"
-            }
-        ]
-    },
-    {
-        "file": "TokenSale/contracts/TokenSale.sol",
-        "contracts": [
-            {
-                "name": "TokenSale"
-            },
-            {
-                "name": "Token"
-            }
-        ]
-    },
-    {
-        "file": "annotation/governmental_survey.sol",
-        "contracts": [
-            {
-                "name": "Governmental",
-                "annotations": {
-                    "vulnerable_lines": [
-                        27
-                    ],
-                    "reports": [
-                        "TIME_MANIPULATION"
-                    ]
-                }
-            },
-            {
-                "name": "Attacker",
-                "annotations": {
-                    "vulnerable_lines": [
-                        51
-                    ],
-                    "reports": [
-                        "TIME_MANIPULATION"
-                    ]
-                }
-            }
-        ]
-    },
-    {
-        "file": "annotation/lottery.sol",
-        "contracts": [
-            {
-                "name": "Lottery",
-                "annotations": {
-                    "vulnerable_lines": [
-                        38,
-                        42
-                    ],
-                    "reports": [
-                        "BAD_RANDOMNESS",
-                        "BAD_RANDON"
-                    ]
-                }
-            }
-        ]
-    },
-    {
-        "file": "sFuzz/BountyHunt.sol",
-        "contracts": [
-            {
-                "name": "BountyHunt"
-            }
-        ]
-    },
-    {
-        "file": "RemiCoin/contracts/Migrations.sol",
-        "contracts": [
-            {
-                "name": "Migrations"
-            }
-        ]
-    },
-    {
-        "file": "RemiCoin/contracts/RemiCoin.sol",
-        "contracts": [
-            {
-                "name": "ERC20Interface"
-            },
-            {
-                "name": "Owner"
-            },
-            {
-                "name": "RemiCoin"
-            }
-        ]
-    },
-    {
-        "file": "ILF/crowdsale.sol",
-        "contracts": [
-            {
-                "name": "Crowdsale"
-            }
-        ]
-    },
-    {
-        "file": "ILF/grid.sol",
-        "contracts": [
-            {
-                "name": "Grid"
             }
         ]
     }
