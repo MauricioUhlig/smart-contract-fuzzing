@@ -83,6 +83,7 @@
                         27
                     ],
                     "reports": [
+                        "BLOCK_DEPENDENCY",
                         "BLOCK_DEPENDENCY"
                     ]
                 }
@@ -100,6 +101,7 @@
                         42
                     ],
                     "reports": [
+                        "BLOCK_DEPENDENCY",
                         "BLOCK_DEPENDENCY"
                     ]
                 }
@@ -128,6 +130,7 @@
                         19
                     ],
                     "reports": [
+                        "BLOCK_DEPENDENCY",
                         "BLOCK_DEPENDENCY"
                     ]
                 }
@@ -147,6 +150,9 @@
                         22
                     ],
                     "reports": [
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
                         "BLOCK_DEPENDENCY"
                     ]
                 }
@@ -204,6 +210,11 @@
                         158
                     ],
                     "reports": [
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
                         "BLOCK_DEPENDENCY"
                     ]
                 }
@@ -243,6 +254,17 @@
                         718
                     ],
                     "reports": [
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
+                        "BLOCK_DEPENDENCY",
                         "BLOCK_DEPENDENCY"
                     ]
                 }
@@ -263,6 +285,7 @@
                         20
                     ],
                     "reports": [
+                        "BLOCK_DEPENDENCY",
                         "BLOCK_DEPENDENCY"
                     ]
                 }
@@ -442,6 +465,8 @@
                         2467
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -481,6 +506,7 @@
                         97
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -509,6 +535,8 @@
                         75
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -607,6 +635,7 @@
                         210
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -760,6 +789,9 @@
                         192
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
+                        "UNHANDLED_EXCEPTION",
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -778,6 +810,8 @@
                         133
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -918,6 +952,9 @@
                         174
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
+                        "UNHANDLED_EXCEPTION",
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -963,6 +1000,7 @@
                         465
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -983,6 +1021,7 @@
                         65
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -1000,6 +1039,7 @@
                         141
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -1071,6 +1111,7 @@
                         97
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -1158,6 +1199,7 @@
                         97
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -1264,6 +1306,7 @@
                         213
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -1370,6 +1413,7 @@
                         27
                     ],
                     "reports": [
+                        "UNHANDLED_EXCEPTION",
                         "UNHANDLED_EXCEPTION"
                     ]
                 }
@@ -1550,6 +1594,7 @@
                         430
                     ],
                     "reports": [
+                        "REENTRANCY",
                         "REENTRANCY"
                     ]
                 }
@@ -1761,6 +1806,7 @@
                         31
                     ],
                     "reports": [
+                        "TRANSACTION_ORDER_DEPENDENCY",
                         "TRANSACTION_ORDER_DEPENDENCY"
                     ]
                 }
@@ -1778,6 +1824,7 @@
                         113
                     ],
                     "reports": [
+                        "TRANSACTION_ORDER_DEPENDENCY",
                         "TRANSACTION_ORDER_DEPENDENCY"
                     ]
                 }
@@ -1798,6 +1845,7 @@
                         28
                     ],
                     "reports": [
+                        "TRANSACTION_ORDER_DEPENDENCY",
                         "TRANSACTION_ORDER_DEPENDENCY"
                     ]
                 }
@@ -1958,6 +2006,11 @@
                         48
                     ],
                     "reports": [
+                        "INTEGER_OVERFLOW",
+                        "INTEGER_OVERFLOW",
+                        "INTEGER_OVERFLOW",
+                        "INTEGER_OVERFLOW",
+                        "INTEGER_OVERFLOW",
                         "INTEGER_OVERFLOW"
                     ]
                 }
@@ -2008,6 +2061,8 @@
                         33
                     ],
                     "reports": [
+                        "INTEGER_OVERFLOW",
+                        "INTEGER_OVERFLOW",
                         "INTEGER_OVERFLOW"
                     ]
                 }
@@ -2137,6 +2192,7 @@
                         22
                     ],
                     "reports": [
+                        "INTEGER_OVERFLOW",
                         "INTEGER_OVERFLOW"
                     ]
                 }

@@ -117,12 +117,10 @@ def extract_annotations_and_contracts(file_path: str) -> Dict[str, Any]:
                         # Check if this line is within the current contract's range
                         if next_contract_start is None:
                             if i >= contract["start_line"]:
-                                if report_type not in contract["annotations"]["reports"]:
-                                    contract["annotations"]["reports"].append(report_type)
+                                contract["annotations"]["reports"].append(report_type)
                         else:
                             if contract["start_line"] <= i < next_contract_start:
-                                if report_type not in contract["annotations"]["reports"]:
-                                    contract["annotations"]["reports"].append(report_type)
+                                contract["annotations"]["reports"].append(report_type)
                 
                 # Single-line vulnerable_at_lines annotations
                 vuln_match = re.search(r'//\s*@vulnerable_at_lines?:\s*([\d,\s]+)', line)
@@ -151,8 +149,6 @@ def extract_annotations_and_contracts(file_path: str) -> Dict[str, Any]:
                     "name": contract["name"]
                    }
                 else:
-                    contract["annotations"]["vulnerable_lines"].sort()
-                    contract["annotations"]["reports"].sort()
                     # Remove type and start_line from final output
                     final_contract = {
                         "name": contract["name"],
