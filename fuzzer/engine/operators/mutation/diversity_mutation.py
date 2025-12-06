@@ -7,6 +7,9 @@ import random
 
 from utils import settings
 from ...plugin_interfaces.operators.mutation import Mutation
+from engine.fitness import fitness_function
+from engine.environment import FuzzingEnvironment
+import copy
 
 class DiversityMutation(Mutation):
     def __init__(self, pm):
@@ -24,7 +27,7 @@ class DiversityMutation(Mutation):
         Diversity-aware mutation that introduces novel variations
         Higher mutation rate for genes that are common in population
         """
-
+        current_fitness = engine.current_fitness_base_scores[individual.hash]
          # Calculate gene frequency in population
         gene_frequencies = {}
         for ind in engine.population.individuals:
@@ -66,17 +69,24 @@ class DiversityMutation(Mutation):
                 elif mutation_type == "gaslimit":
                     gene["gaslimit"] = engine.generator.get_random_gaslimit(func)
         
-        # Add/remove genes to promote diversity
-        if random.random() < engine.args.probability_mutation:
-            if len(individual.chromosome) < settings.MAX_INDIVIDUAL_LENGTH and random.random() < 0.5:
-                # Add a new gene
-                new_gene = engine.generator.generate_random_input()
-                individual.chromosome.append(new_gene)
-            elif len(individual.chromosome) > 1 and random.random() < 0.5:
-                # Remove a gene
-                individual.chromosome.pop(random.randint(0, len(individual.chromosome) - 1))
+        # # Add/remove genes to promote diversity
+        # if random.random() < engine.args.probability_mutation:
+        #     if len(individual.chromosome) < settings.MAX_INDIVIDUAL_LENGTH and random.random() < 0.5:
+        #         # Add a new gene
+        #         new_gene = engine.generator.generate_random_input()
+        #         individual.chromosome.append(new_gene)
+        #     elif len(individual.chromosome) > 1 and random.random() < 0.5:
+        #         # Remove a gene
+        #         individual.chromosome.pop(random.randint(0, len(individual.chromosome) - 1))
         
         # Recalculate hash
         new_individual = individual.clone()
         new_individual.init(individual.chromosome)
-        return new_individual
+
+        # new_env = copy.deepcopy(engine)
+        engine.analysis[0].execution_function(new_individual, engine.env)
+        new_fitness = fitness_function(new_individual, engine.env)
+        if new_fitness > current_fitness:
+            return new_individual
+        else:
+            return individual

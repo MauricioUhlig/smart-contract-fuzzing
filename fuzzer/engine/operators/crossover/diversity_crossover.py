@@ -29,6 +29,8 @@ class DiversityCrossover(Crossover):
         
         _father = father.clone()
         _mother = mother.clone()
+
+        return father, mother
         
         max_length = settings.MAX_INDIVIDUAL_LENGTH
         

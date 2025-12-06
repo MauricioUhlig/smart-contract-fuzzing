@@ -160,17 +160,19 @@ class CollaborativeEngine:
                 # Create new generation using diversity-aware operators
                 new_population = []
                 
-                while len(new_population) < self.population.size:
-                    # Diversity-based selection
-                    parents = self._diversity_based_selection(fitness_scores)
+                for individual in self.population.individuals:
+                    new_population.append(self.mutation.mutate(individual, self))
+                # while len(new_population) < self.population.size:
+                #     # Diversity-based selection
+                #     parents = self._diversity_based_selection(fitness_scores)
                     
 
-                    # Crossover.
-                    children = self.crossover.cross(*parents)
-                    # Mutation.
-                    children = [self.mutation.mutate(child, self) for child in children]
-                    # Collect children.
-                    new_population.extend(children)
+                #     # Crossover.
+                #     children = self.crossover.cross(*parents)
+                #     # Mutation.
+                #     children = [self.mutation.mutate(child, self) for child in children]
+                #     # Collect children.
+                #     new_population.extend(children)
                     
                 
                 # Replace population
@@ -214,20 +216,21 @@ class CollaborativeEngine:
         """
         # Get base fitness scores
         all_fitness = self.population.all_fits(self.fitness)
-        fitness_scores = {}
+        self.current_fitness_base_scores = {}
         
         # Build fitness mapping
         for i, individual in enumerate(self.population.individuals):
-            fitness_scores[individual.hash] = all_fitness[i]
+            self.current_fitness_base_scores[individual.hash] = all_fitness[i]
         
         # Calculate bonuses in single pass
         unique_contributions, complementarities = self._calculate_collaborative_bonuses_single_pass(env)
         
         # Apply bonuses
+        fitness_scores = {}
         for individual in self.population.individuals:
             individual_hash = individual.hash
             group_bonus = unique_contributions[individual_hash] + complementarities[individual_hash]
-            fitness_scores[individual_hash] += group_bonus * self.diversity_weight
+            fitness_scores[individual_hash] = self.current_fitness_base_scores[individual.hash] + group_bonus * self.diversity_weight
         
         return fitness_scores
         
@@ -418,7 +421,7 @@ class CollaborativeEngine:
     
     def _behavioral_distance(self, features1, features2):
         """
-        Optimized behavioral distance calculation using precomputed features
+        Behavioral distance calculation using precomputed features
         """
         # Chromosome length difference (normalized)
         len_diff = abs(features1['length'] - features2['length'])
@@ -489,12 +492,6 @@ class CollaborativeEngine:
         Uses sampling for very large populations
         """
         population_size = len(self.population.individuals)
-        if population_size < 2:
-            return 0.0
-        
-        # For large populations, use sampling to reduce computation
-        if population_size > 50:
-            return self._calculate_diversity_sampled(sample_size=30)
         
         # Precompute all features
         features_list = [self._extract_behavioral_features(ind) for ind in self.population.individuals]
