@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "PSO",
+            "name": "Confuzzius - Original",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/fuzzer/main.py",
@@ -13,22 +13,7 @@
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
                 "-g", "10",
-                "--algorithm", "pso"
-            ]
-        },
-        {
-            "name": "GA - Original",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/fuzzer/main.py",
-            "console": "integratedTerminal",
-            "args": [
-                "--source", "${workspaceFolder}/${input:contractFile}",
-                "-c", "${input:contractName}",
-                "--solc", "v0.4.26",
-                "--evm", "byzantium",
-                "-g", "10",
-                "--algorithm", "ga",
+                "--algorithm", "confuzzius",
                 "--population-size", "40",
                 "--probability-crossover", "0.8",
                 "--probability-mutation", "0.35",
@@ -55,21 +40,6 @@
                 "-r", "${workspaceFolder}/results/collaborative",
 
                 "--diversity", "1"
-            ]
-        },
-        {
-            "name": "Pyswarm",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/fuzzer/main.py",
-            "console": "integratedTerminal",
-            "args": [
-                "--source", "${workspaceFolder}/${input:contractFile}",
-                "--contract", "${input:contractName}",
-                "--algorithm", "pyswarms",
-                "--generations", "100",
-                "--solc", "v0.4.26",
-                "--evm", "byzantium"
             ]
         },
         {
@@ -116,7 +86,7 @@
             "args": [
                 "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}",
                 "--algorithm", "collaborative",
-                // "--algorithm", "ga",
+                // "--algorithm", "confuzzius",
                 // "--generations", "100",
                 "--population-size", "40",
                 "--diversity-weight", "0.5",
@@ -128,8 +98,6 @@
                 "-t", "60",
 
                 "--diversity", "1"
-                // "--algorithm", "pyswarms",
-
             ]
         },
         {

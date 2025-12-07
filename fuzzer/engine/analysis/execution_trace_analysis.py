@@ -77,7 +77,7 @@ class ExecutionTraceAnalyzer(OnTheFlyAnalysis):
             branch_coverage_percentage = (branch_coverage / (len(self.env.overall_jumpis) * 2)) * 100
 
         msg = 'Generation number {} \t Code coverage: {:.2f}% ({}/{}) \t Branch coverage: {:.2f}% ({}/{}) \t ' \
-              'Transactions: {} ({} unique)   \t Time: {}'.format(
+              'Transactions: {} ({} unique)   \t Time: {:.2f}s'.format(
             g + 1, code_coverage_percentage, len(self.env.code_coverage), len(self.env.overall_pcs),
             branch_coverage_percentage, branch_coverage, len(self.env.overall_jumpis) * 2, self.env.nr_of_transactions, len(self.env.unique_individuals),
             time.time() - self.env.execution_begin)

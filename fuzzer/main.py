@@ -16,9 +16,7 @@ from z3 import Solver
 from evm import InstrumentedEVM
 from detectors import DetectorExecutor
 from engine import EvolutionaryFuzzingEngine
-from engine.pso_engine import ParticleSwarmEngine
 from engine.collaborative_engine import CollaborativeEngine
-from engine.pyswarms_engine import PySwarmsEngine
 from engine.components import Generator, Individual, Population
 from engine.analysis import SymbolicTaintAnalyzer
 from engine.analysis import ExecutionTraceAnalyzer
@@ -164,40 +162,7 @@ class Fuzzer:
             mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
             
 
-        if self.args.algorithm == 'pso':
-            # Create PSO engine
-            engine = ParticleSwarmEngine(
-                population=population,
-                mapping=get_function_signature_mapping(self.env.abi),
-                w=self.args.pso_w,
-                c1=self.args.pso_c1,
-                c2=self.args.pso_c2
-            )
-            logger.info("Using Particle Swarm Optimization (w=%.2f, c1=%.2f, c2=%.2f)", 
-                       self.args.pso_w, self.args.pso_c1, self.args.pso_c2)
-        elif self.args.algorithm == 'pyswarms':
-            # Create PySwarms engine
-            options = {
-                'c1': self.args.pyswarms_c1,
-                'c2': self.args.pyswarms_c2,
-                'w': self.args.pyswarms_w,
-                'k': self.args.pyswarms_k,
-                'p': self.args.pyswarms_p,
-            }
-            engine = PySwarmsEngine(
-                population=population,
-                mapping=get_function_signature_mapping(self.env.abi),
-                optimizer_type=self.args.pyswarms_optimizer,
-                options=options
-            )
-            logger.info("Using PySwarms %s optimizer (w=%.2f, c1=%.2f, c2=%.2f, k=%d, p=%d)", 
-                       self.args.pyswarms_optimizer, 
-                       self.args.pyswarms_w, 
-                       self.args.pyswarms_c1, 
-                       self.args.pyswarms_c2,
-                       self.args.pyswarms_k,
-                       self.args.pyswarms_p)
-        elif self.args.algorithm == 'collaborative':
+        if self.args.algorithm == 'collaborative':
             # Create Collaborative Diversity Engine
             engine = CollaborativeEngine(
                 population=population,
@@ -217,7 +182,7 @@ class Fuzzer:
                 mutation=mutation,
                 mapping=get_function_signature_mapping(self.env.abi)
             )
-            logger.info("Using Genetic Algorithm")
+            logger.info("Using Confizzius Adaptative Genetic Algorithm")
 
         engine.fitness_register(lambda x: fitness_function(x, self.env))
         engine.analysis.append(ExecutionTraceAnalyzer(self.env))
@@ -335,39 +300,10 @@ def launch_argument_parser():
                         dest="evm_version", type=str)
 
     parser.add_argument("--algorithm", 
-                        help="Optimization algorithm: 'ga' (Genetic Algorithm, default), 'pso' (custom PSO), 'pyswarms' (PySwarms library), or 'collaborative' (Collaborative Diversity).",
-                        action="store", dest="algorithm", type=str, default="ga", 
-                        choices=['ga', 'pso', 'pyswarms', 'collaborative'])
-    
-    parser.add_argument("--pso-w", 
-                        help="PSO inertia weight (default 0.7).",
-                        action="store", dest="pso_w", type=float, default=0.7)
-    parser.add_argument("--pso-c1", 
-                        help="PSO cognitive coefficient (default 1.5).",
-                        action="store", dest="pso_c1", type=float, default=1.5)
-    parser.add_argument("--pso-c2", 
-                        help="PSO social coefficient (default 1.5).",
-                        action="store", dest="pso_c2", type=float, default=1.5)
-    
-    parser.add_argument("--pyswarms-optimizer", 
-                        help="PySwarms optimizer type: 'global' (GlobalBestPSO, default) or 'local' (LocalBestPSO).",
-                        action="store", dest="pyswarms_optimizer", type=str, default="global",
-                        choices=['global', 'local'])
-    parser.add_argument("--pyswarms-w", 
-                        help="PySwarms inertia weight (default 0.7).",
-                        action="store", dest="pyswarms_w", type=float, default=0.7)
-    parser.add_argument("--pyswarms-c1", 
-                        help="PySwarms cognitive coefficient (default 1.5).",
-                        action="store", dest="pyswarms_c1", type=float, default=1.5)
-    parser.add_argument("--pyswarms-c2", 
-                        help="PySwarms social coefficient (default 1.5).",
-                        action="store", dest="pyswarms_c2", type=float, default=1.5)
-    parser.add_argument("--pyswarms-k", 
-                        help="PySwarms number of neighbors to be considered. Must be a positive integer less than :code:`n_particles` (default 5)",
-                        action="store", dest="pyswarms_k", type=int, default=5)
-    parser.add_argument("--pyswarms-p", 
-                        help="PySwarms the Minkowski p-norm to use. 1 is the sum-of-absolute values (or L1 distance) while 2 is the Euclidean (or L2) distance (default 1)",
-                        action="store", dest="pyswarms_p", type=int, default=1)
+                        help="Optimization algorithm: 'confuzzius' (Adaptative Genetic Algorithm, default)  or 'collaborative' (Collaborative Diversity).",
+                        action="store", dest="algorithm", type=str, default="confuzzius", 
+                        choices=['confuzzius', 'collaborative'])
+
     parser.add_argument("--diversity-weight", 
                         help="Collaborative: Weight for diversity in fitness (default 0.3).",
                         action="store", dest="diversity_weight", type=float, default=0.3)
@@ -488,11 +424,27 @@ def launch_argument_parser():
 
 def print_logo():
     print("")
-    print("     ______            ______                _           ")
-    print("    / ____/___  ____  / ____/_  __________  (_)_  _______")
-    print("   / /   / __ \/ __ \/ /_  / / / /_  /_  / / / / / / ___/")
-    print("  / /___/ /_/ / / / / __/ / /_/ / / /_/ /_/ / /_/ (__  ) ")
-    print("  \____/\____/_/ /_/_/    \__,_/ /___/___/_/\__,_/____/  ")
+    print("  ______          _       _   _                               ")
+    print(" |  ____|        | |     | | (_)                              ")
+    print(" | |____   _____ | |_   _| |_ _  ___  _ __   __ _ _ __ _   _  ")
+    print(" |  __\ \ / / _ \| | | | | __| |/ _ \| '_ \ / _` | '__| | | | ")
+    print(" | |___\ V / (_) | | |_| | |_| | (_) | | | | (_| | |  | |_| | ")
+    print(" |______\_/ \___/|_|\__,_|\__|_|\___/|_| |_|\__,_|_|   \__, | ")
+    print("           _____            _                  _        __/ | ")
+    print("          / ____|          | |                | |      |___/  ")
+    print("         | |     ___  _ __ | |_ _ __ __ _  ___| |_            ")
+    print("         | |    / _ \| '_ \| __| '__/ _` |/ __| __|           ")
+    print("         | |___| (_) | | | | |_| | | (_| | (__| |_            ")
+    print("          \_____\___/|_| |_|\__|_|_ \__,_|\___|\__|           ")
+    print("                                                              ")
+    print(".              ______             _                           ")
+    print("              |  ____|           (_)                          ")
+    print("              | |__ _   _ _________ _ __   __ _               ")
+    print("              |  __| | | |_  /_  / | '_ \ / _` |              ")
+    print("              | |  | |_| |/ / / /| | | | | (_| |              ")
+    print("              |_|   \__,_/___/___|_|_| |_|\__, |              ")
+    print("                                           __/ |              ")
+    print("                                          |___/               ")
     print("")
 
 if '__main__' == __name__:
