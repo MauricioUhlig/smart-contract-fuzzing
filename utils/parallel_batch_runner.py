@@ -27,7 +27,7 @@ def load_json_config(json_file: str) -> List[Dict[str, Any]]:
         sys.exit(1)
 
 
-def invoke_fuzzer(task: Dict[str, Any]) -> Dict[str, Any]:
+def invoke_fuzzer(base_path: str, task: Dict[str, Any]) -> Dict[str, Any]:
     """
     Invoke the fuzzer with the specified arguments
     Returns: Dictionary with execution results
@@ -39,7 +39,7 @@ def invoke_fuzzer(task: Dict[str, Any]) -> Dict[str, Any]:
     # Build the command
     cmd = [
         "python3", "fuzzer/main.py",
-        "--source", "dataset/curated/" + source_file,
+        "--source", base_path + source_file,
         "--contract", contract_name,
         "-r", f"results/{extra_args[(extra_args.index('--algorithm')+1)]}/{source_file.replace('/', '-').replace('.sol', '.json')}"
     ]
@@ -133,7 +133,7 @@ def create_tasks(config: List[Dict[str, Any]], extra_args: List[str]) -> List[Di
     
     return tasks
 
-def run_parallel(tasks: List[Dict[str, Any]], max_workers: int = None) -> List[Dict[str, Any]]:
+def run_parallel(tasks: List[Dict[str, Any]], base_path: str, max_workers: int = None) -> List[Dict[str, Any]]:
     """
     Run tasks in parallel using ThreadPoolExecutor
     Note: Using threads instead of processes to avoid pickling issues
@@ -146,7 +146,7 @@ def run_parallel(tasks: List[Dict[str, Any]], max_workers: int = None) -> List[D
     results = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Submit all tasks
-        future_to_task = {executor.submit(invoke_fuzzer, task): task for task in tasks}
+        future_to_task = {executor.submit(invoke_fuzzer, base_path, task): task for task in tasks}
         
         # Collect results as they complete
         for future in concurrent.futures.as_completed(future_to_task):
@@ -171,39 +171,39 @@ def run_parallel(tasks: List[Dict[str, Any]], max_workers: int = None) -> List[D
     return results
 
 
-def run_process_pool(tasks: List[Dict[str, Any]], max_workers: int = None) -> List[Dict[str, Any]]:
-    """
-    Run tasks using ProcessPoolExecutor (more isolated, but may have pickling issues)
-    Use this if your fuzzer is CPU-intensive and threads don't provide true parallelism
-    """
-    if max_workers is None:
-        max_workers = min(len(tasks), multiprocessing.cpu_count())
+# def run_process_pool(tasks: List[Dict[str, Any]], max_workers: int = None) -> List[Dict[str, Any]]:
+#     """
+#     Run tasks using ProcessPoolExecutor (more isolated, but may have pickling issues)
+#     Use this if your fuzzer is CPU-intensive and threads don't provide true parallelism
+#     """
+#     if max_workers is None:
+#         max_workers = min(len(tasks), multiprocessing.cpu_count())
     
-    print(f"Running {len(tasks)} tasks with {max_workers} processes")
+#     print(f"Running {len(tasks)} tasks with {max_workers} processes")
     
-    results = []
-    with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
-        future_to_task = {executor.submit(invoke_fuzzer, task): task for task in tasks}
+#     results = []
+#     with concurrent.futures.ProcessPoolExecutor(max_workers=max_workers) as executor:
+#         future_to_task = {executor.submit(invoke_fuzzer, task): task for task in tasks}
         
-        for future in concurrent.futures.as_completed(future_to_task):
-            task = future_to_task[future]
-            try:
-                result = future.result()
-                results.append(result)
+#         for future in concurrent.futures.as_completed(future_to_task):
+#             task = future_to_task[future]
+#             try:
+#                 result = future.result()
+#                 results.append(result)
                 
-                success_count = sum(1 for r in results if r.get('success', False))
-                print(f"Progress: {len(results)}/{len(tasks)} completed ({success_count} successful)")
+#                 success_count = sum(1 for r in results if r.get('success', False))
+#                 print(f"Progress: {len(results)}/{len(tasks)} completed ({success_count} successful)")
                 
-            except Exception as exc:
-                print(f"Task {task['source_file']}->{task['contract_name']} generated an exception: {exc}")
-                results.append({
-                    'success': False,
-                    'source_file': task['source_file'],
-                    'contract_name': task['contract_name'],
-                    'error': str(exc)
-                })
+#             except Exception as exc:
+#                 print(f"Task {task['source_file']}->{task['contract_name']} generated an exception: {exc}")
+#                 results.append({
+#                     'success': False,
+#                     'source_file': task['source_file'],
+#                     'contract_name': task['contract_name'],
+#                     'error': str(exc)
+#                 })
     
-    return results
+#     return results
 
 
 def print_results_summary(results: List[Dict[str, Any]]) -> None:
@@ -243,6 +243,7 @@ def print_results_summary(results: List[Dict[str, Any]]) -> None:
 def main():
     parser = argparse.ArgumentParser(description='Multicore batch runner for fuzzing')
     parser.add_argument('json_file', help='Path to the JSON configuration file')
+    parser.add_argument('base_path', help='Path to the contract files')
     parser.add_argument('--parallel', '-p', action='store_true', 
                        help='Run tasks in parallel using multiple cores')
     parser.add_argument('--processes', type=int, 
@@ -271,9 +272,9 @@ def main():
     
     
     if args.processes:
-        results = run_parallel(tasks, max_workers=args.processes)
+        results = run_parallel(tasks, args.base_path, max_workers=args.processes)
     else:
-        results = run_parallel(tasks)
+        results = run_parallel(tasks, args.base_path)
     
     total_time = time.time() - start_time
     

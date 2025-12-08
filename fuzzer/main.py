@@ -22,7 +22,7 @@ from engine.analysis import SymbolicTaintAnalyzer
 from engine.analysis import ExecutionTraceAnalyzer
 from engine.environment import FuzzingEnvironment
 from engine.operators import LinearRankingSelection
-from engine.operators import DataDependencyLinearRankingSelection
+from engine.operators import DataDependencyLinearRankingSelection, DiversityLinearRankingSelection
 from engine.operators import Crossover
 from engine.operators import DataDependencyCrossover
 from engine.operators import DiversityCrossover
@@ -153,8 +153,8 @@ class Fuzzer:
             crossover = DataDependencyCrossover(pc=settings.PROBABILITY_CROSSOVER, env=self.env)
             mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
         if self.args.diversity:
-            selection = LinearRankingSelection()
-            crossover = DiversityCrossover(pc=settings.PROBABILITY_CROSSOVER)
+            selection = DiversityLinearRankingSelection(env=self.env)
+            crossover = DataDependencyCrossover(pc=settings.PROBABILITY_CROSSOVER, env=self.env)
             mutation = DiversityMutation(pm=settings.PROBABILITY_MUTATION)
         else:
             selection = LinearRankingSelection()
@@ -167,12 +167,11 @@ class Fuzzer:
             engine = CollaborativeEngine(
                 population=population,
                 generator=generator,
+                selection=selection,
                 crossover=crossover,
                 mutation=mutation,
                 args=self.args
             )
-            logger.info("Using Collaborative Diversity Engine (diversity_weight=%.2f, novelty_threshold=%.2f)", 
-                       self.args.diversity_weight, self.args.novelty_threshold)
         else:
             # Create and run evolutionary fuzzing engine (GA)
             engine = EvolutionaryFuzzingEngine(
@@ -303,13 +302,6 @@ def launch_argument_parser():
                         help="Optimization algorithm: 'confuzzius' (Adaptative Genetic Algorithm, default)  or 'collaborative' (Collaborative Diversity).",
                         action="store", dest="algorithm", type=str, default="confuzzius", 
                         choices=['confuzzius', 'collaborative'])
-
-    parser.add_argument("--diversity-weight", 
-                        help="Collaborative: Weight for diversity in fitness (default 0.3).",
-                        action="store", dest="diversity_weight", type=float, default=0.3)
-    parser.add_argument("--novelty-threshold", 
-                        help="Collaborative: Threshold for novelty in archive (default 0.5).",
-                        action="store", dest="novelty_threshold", type=float, default=0.5)
 
     # Evolutionary parameters
     group3 = parser.add_mutually_exclusive_group(required=False)

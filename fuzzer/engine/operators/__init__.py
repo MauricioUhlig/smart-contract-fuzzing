@@ -5,6 +5,7 @@
 
 from .selection.linear_ranking_selection import LinearRankingSelection
 from .selection.data_dependency_linear_ranking_selection import DataDependencyLinearRankingSelection
+from .selection.diversity_linear_ranking_selection import DiversityLinearRankingSelection
 
 from .crossover.crossover import Crossover
 from .crossover.diversity_crossover import DiversityCrossover
