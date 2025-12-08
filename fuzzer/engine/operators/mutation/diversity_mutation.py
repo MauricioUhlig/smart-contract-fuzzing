@@ -25,49 +25,79 @@ class DiversityMutation(Mutation):
         Higher mutation rate for genes that are common in population
         """
 
-         # Calculate gene frequency in population
-        gene_frequencies = {}
-        for ind in engine.population.individuals:
-            for gene in ind.chromosome:
-                func = gene["arguments"][0]
-                gene_frequencies[func] = gene_frequencies.get(func, 0) + 1
-        
-        # Mutate each gene with adaptive probability
-        for i, gene in enumerate(individual.chromosome):
-            func = gene["arguments"][0]
-            frequency = gene_frequencies.get(func, 0) / len(engine.population.individuals)
-            
-            # Higher mutation rate for common genes
-            adaptive_pm = engine.args.probability_mutation * (1 + frequency)
-            
-            if random.random() < adaptive_pm:
-                # Mutate this gene
-                mutation_type = random.choice([
-                    "account", "amount", "arguments", "timestamp", 
-                    "blocknumber", "gaslimit"
-                ])
-                
-                if mutation_type == "account":
-                    gene["account"] = engine.generator.get_random_account(func)
-                elif mutation_type == "amount":
-                    gene["amount"] = engine.generator.get_random_amount(func)
-                elif mutation_type == "arguments":
-                    if len(gene["arguments"]) > 1:
-                        arg_idx = random.randint(1, len(gene["arguments"]) - 1)
-                        # if arg_idx < len(gene["arguments"]):
-                        arg_type = engine.env.interface[func][arg_idx - 1]
-                        gene["arguments"][arg_idx] = engine.generator.get_random_argument(
-                            arg_type, func, arg_idx - 1
-                        )
-                elif mutation_type == "timestamp":
-                    gene["timestamp"] = engine.generator.get_random_timestamp(func)
-                elif mutation_type == "blocknumber":
-                    gene["blocknumber"] = engine.generator.get_random_blocknumber(func)
-                elif mutation_type == "gaslimit":
-                    gene["gaslimit"] = engine.generator.get_random_gaslimit(func)
+        for gene in individual.chromosome:
+            # TRANSACTION
+            function_hash = gene["arguments"][0]
+            for element in gene:
+                if element == "account" and self._luck():
+                    gene["account"] = individual.generator.get_random_account(function_hash)
+                elif element == "amount" and self._luck():
+                    gene["amount"] = individual.generator.get_random_amount(function_hash)
+                elif element == "gaslimit" and self._luck():
+                    gene["gaslimit"] = individual.generator.get_random_gaslimit(function_hash)
+                else:
+                    for argument_index in range(1, len(gene["arguments"])):
+                        if random.random() > self.pm:
+                            continue
+                        argument_type = individual.generator.interface[function_hash][argument_index - 1]
+                        argument = individual.generator.get_random_argument(argument_type,
+                                                                            function_hash,
+                                                                            argument_index - 1)
+                        gene["arguments"][argument_index] = argument
+
+            # BLOCK
+            if "timestamp" in gene:
+                if self._luck():
+                    gene["timestamp"] = individual.generator.get_random_timestamp(function_hash)
+            else:
+                gene["timestamp"] = individual.generator.get_random_timestamp(function_hash)
+
+            if "blocknumber" in gene:
+                if self._luck():
+                    gene["blocknumber"] = individual.generator.get_random_blocknumber(function_hash)
+            else:
+                gene["blocknumber"] = individual.generator.get_random_blocknumber(function_hash)
+
+            # GLOBAL STATE
+            if "balance" in gene:
+                if self._luck():
+                    gene["balance"] = individual.generator.get_random_balance(function_hash)
+            else:
+                gene["balance"] = individual.generator.get_random_balance(function_hash)
+
+            if "call_return" in gene:
+                for address in gene["call_return"]:
+                    if self._luck():
+                        gene["call_return"][address] = individual.generator.get_random_callresult(function_hash, address)
+            else:
+                gene["call_return"] = dict()
+                address, call_return_value = individual.generator.get_random_callresult_and_address(function_hash)
+                if address and address not in gene["call_return"]:
+                    gene["call_return"][address] = call_return_value
+
+            if "extcodesize" in gene:
+                for address in gene["extcodesize"]:
+                    if self._luck():
+                        gene["extcodesize"][address] = individual.generator.get_random_extcodesize(function_hash, address)
+            else:
+                gene["extcodesize"] = dict()
+                address, extcodesize_value = individual.generator.get_random_extcodesize_and_address(function_hash)
+                if address and address not in gene["extcodesize"]:
+                    gene["extcodesize"][address] = extcodesize_value
+
+            if "returndatasize" in gene:
+                for address in gene["returndatasize"]:
+                    if self._luck():
+                        gene["returndatasize"][address] = individual.generator.get_random_returndatasize(function_hash, address)
+            else:
+                gene["returndatasize"] = dict()
+                address, returndatasize_value = individual.generator.get_random_returndatasize_and_address(function_hash)
+                if address and address not in gene["returndatasize"]:
+                    gene["returndatasize"][address] = returndatasize_value
+
         
         # Add/remove genes to promote diversity
-        if random.random() < engine.args.probability_mutation:
+        if self._luck():
             if len(individual.chromosome) < settings.MAX_INDIVIDUAL_LENGTH and random.random() < 0.5:
                 # Add a new gene
                 new_gene = engine.generator.generate_random_input()
@@ -76,7 +106,8 @@ class DiversityMutation(Mutation):
                 # Remove a gene
                 individual.chromosome.pop(random.randint(0, len(individual.chromosome) - 1))
         
-        # Recalculate hash
-        new_individual = individual.clone()
-        new_individual.init(individual.chromosome)
-        return new_individual
+        individual.solution = individual.decode()
+        return individual
+
+    def _luck(self):
+        return random.random() <= self.pm

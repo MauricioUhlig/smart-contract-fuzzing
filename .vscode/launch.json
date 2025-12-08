@@ -17,6 +17,7 @@
                 "--population-size", "40",
                 "--probability-crossover", "0.8",
                 "--probability-mutation", "0.35",
+                "--data-dependency", "1"
             ]
         },
         {
@@ -29,10 +30,8 @@
                 "--source", "${workspaceFolder}/${input:contractFile}",
                 "--contract", "${input:contractName}",
                 "--algorithm", "collaborative",
-                "--generations", "10",
+                "--generations", "20",
                 "--population-size", "40",
-                "--diversity-weight", "0.5",
-                "--novelty-threshold", "0.6",
                 "--probability-crossover", "0.8",
                 "--probability-mutation", "0.35",
                 "--solc", "v0.4.26",
@@ -85,19 +84,20 @@
             "console": "integratedTerminal",
             "args": [
                 "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}",
-                "--algorithm", "collaborative",
-                // "--algorithm", "confuzzius",
+                "${workspaceFolder}/${input:basePathContractsToRun}",
+                //"--algorithm", "collaborative",
+                "--algorithm", "confuzzius",
                 // "--generations", "100",
-                "--population-size", "40",
-                "--diversity-weight", "0.5",
-                "--novelty-threshold", "0.6",
-                "--probability-crossover", "0.8",
-                "--probability-mutation", "0.35",
+                //"--population-size", "40",
+                //"--diversity-weight", "0.5",
+                //"--novelty-threshold", "0.6",
+                //"--probability-crossover", "0.0",
+                //"--probability-mutation", "0.1",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-t", "60",
+                "-t", "100",
 
-                "--diversity", "1"
+                //"--diversity", "1"
             ]
         },
         {
@@ -141,7 +141,13 @@
             "id": "ouputFileToSaveExtractedContracts",
             "type": "promptString",
             "description": "Folder where to extract contracts",
-            "default": "utils/result.json",
+            "default": "utils/result-smartbugs-curated.json",
+        },
+        { 
+            "id": "basePathContractsToRun",
+            "type": "promptString",
+            "description": "Folder where to extract contracts",
+            "default": "online-datasets/smartbugs-curated/dataset/",
         }
     ]
 }
