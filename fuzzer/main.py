@@ -321,6 +321,17 @@ def launch_argument_parser():
                         help="Size of the population.", action="store",
                         dest="probability_mutation", type=float)
 
+    # Collaborative
+    parser.add_argument("-dw", "--data-dependency-weight",
+                        help="Weight of Data Dependency on Fitness score. (Default: 1)", action="store",
+                        dest="data_dependency_weight", type=float)
+    parser.add_argument("-bw", "--branch-weight",
+                        help="Weight of Uncovered Branch on Fitness score. (Default: 1)", action="store",
+                        dest="branch_weight", type=float)
+    parser.add_argument("-uw", "--unique-branch-weight",
+                        help="Weight of Unique Branch Coverage on Fitness score. (Default: 1)", action="store",
+                        dest="unique_branch_weight", type=float)
+
     # Miscellaneous parameters
     parser.add_argument("-r", "--results", type=str, help="Folder or JSON file where results should be stored.")
     parser.add_argument("--tag", type=str, help="Tag to prefix the result file name.")
@@ -347,13 +358,6 @@ def launch_argument_parser():
     parser.add_argument("--max-symbolic-execution",
                         help="Maximum number of symbolic execution calls before restting population (default: " + str(settings.MAX_SYMBOLIC_EXECUTION) + ")", action="store",
                         dest="max_symbolic_execution", type=int)
-
-    version = "ConFuzzius - Version 0.0.2 - "
-    version += "\"By three methods we may learn wisdom:\n"
-    version += "First, by reflection, which is noblest;\n"
-    version += "Second, by imitation, which is easiest;\n"
-    version += "And third by experience, which is the bitterest.\"\n"
-    parser.add_argument("-v", "--version", action="version", version=version)
 
     args = parser.parse_args()
 
@@ -387,12 +391,20 @@ def launch_argument_parser():
 
     if args.data_dependency == None:
         args.data_dependency = 0
-    if args.diversity == None:
-        args.diversity = 0
     if args.constraint_solving == None:
         args.constraint_solving = 1
     if args.environmental_instrumentation == None:
         args.environmental_instrumentation = 1
+
+    if args.diversity == None:
+        args.diversity = 0
+    if args.data_dependency_weight == None:
+        args.data_dependency_weight = 1.0
+    if args.branch_weight == None:
+        args.branch_weight = 1.0
+    if args.unique_branch_weight == None:
+        args.unique_branch_weight = 1.0
+    
 
     if args.environmental_instrumentation == 1:
         settings.ENVIRONMENTAL_INSTRUMENTATION = True

@@ -1,0 +1,21 @@
+PERFORMANCE ANALYSIS WITH VARIABILITY
+=======================================================
+
+Generated on: 2025-12-09 20:45:50
+
+COVERAGE VARIABILITY BY ALGORITHM:
+-----------------------------------
+                mean           std        sample_size
+                mean    max   mean    max        mean
+algorithm                                            
+collaborative  85.39  87.66  17.84  20.90      103.47
+confuzzius     82.21  83.60  17.95  20.75      105.83
+
+FINAL COVERAGE STATISTICS:
+------------------------------
+              code_coverage                     
+                       mean    std    min    max
+algorithm                                       
+collaborative         89.40  17.55  33.52  99.87
+confuzzius            89.05  17.76  35.83  99.83
+

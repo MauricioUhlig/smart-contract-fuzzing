@@ -85,19 +85,20 @@
             "args": [
                 "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}",
                 "${workspaceFolder}/${input:basePathContractsToRun}",
-                //"--algorithm", "collaborative",
-                "--algorithm", "confuzzius",
-                // "--generations", "100",
-                //"--population-size", "40",
-                //"--diversity-weight", "0.5",
-                //"--novelty-threshold", "0.6",
-                //"--probability-crossover", "0.0",
-                //"--probability-mutation", "0.1",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-t", "100",
+                "-t", "60",
 
-                //"--diversity", "1"
+                "--algorithm", "confuzzius",
+
+                // "--algorithm", "collaborative",
+                // "--population-size", "100",
+                // "--probability-crossover", "0.9",
+                // "--probability-mutation", "0.25",
+                // "--data-dependency-weight", "0.5",
+                // "--branch-weight", "0.5",
+                // //"--unique-branch-weight", "5.0",
+                // "--diversity", "1"
             ]
         },
         {
@@ -105,6 +106,13 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/utils/vulnerability_report.py",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Coverage Report",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/utils/report.py",
             "console": "integratedTerminal"
         }
     ],

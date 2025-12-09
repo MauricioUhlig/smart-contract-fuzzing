@@ -1,6 +1,9 @@
 # User files 
 results/
 
+# User datasets
+online-datasets/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

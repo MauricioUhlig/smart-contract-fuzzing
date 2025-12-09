@@ -215,26 +215,38 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
             
         color = algorithm_colors.get(algorithm, algorithm_colors['default'])
         
+        
+        # Get statistics
+        final_mean = algorithm_data['mean'].iloc[-1]
+        label= '{}'.format(algorithm if algorithm != "collaborative" else "Nosso")
         # Plot mean line
         ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
-               color=color, linewidth=3, label=algorithm, alpha=0.9)
+               color=color, linewidth=3, label=label, alpha=0.9)
         
         # Plot standard deviation area
         ax.fill_between(algorithm_data['time_elapsed'],
                        algorithm_data['mean'] - algorithm_data['std'],
                        algorithm_data['mean'] + algorithm_data['std'],
-                       color=color, alpha=0.2, label=f'{algorithm} ±1σ')
+                       color=color, alpha=0.2, label=f'{algorithm} ±1')
         
-        # Plot min/max borders (optional, more transparent)
-        ax.fill_between(algorithm_data['time_elapsed'],
-                       algorithm_data['min'],
-                       algorithm_data['max'],
-                       color=color, alpha=0.1, label=f'{algorithm} range')
+        # # Plot min/max borders (optional, more transparent)
+        # ax.fill_between(algorithm_data['time_elapsed'],
+        #                algorithm_data['min'],
+        #                algorithm_data['max'],
+        #                color=color, alpha=0.1, label=f'{algorithm} range')
     
+        # Add final value annotation at end of line
+        ax.annotate(f'{final_mean:.1f}%', 
+                    xy=(algorithm_data['time_elapsed'].iloc[-1], final_mean),
+                    xytext=(10, 0), textcoords='offset points',
+                    color=color, fontsize=11, fontweight='bold',
+                    bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
+                            edgecolor=color, alpha=0.8))
+
     # Enhanced styling
-    ax.set_xlabel('Time in Seconds', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Code Coverage (%)', fontsize=14, fontweight='bold')
-    ax.set_title('Overall Code Coverage Over Time with Variability', 
+    ax.set_xlabel('Tempo em Segundos', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Cobertura de código (%)', fontsize=14, fontweight='bold')
+    ax.set_title('Cobertura de Código Geral ao Longo do Tempo', 
                  fontsize=16, fontweight='bold', pad=20)
     
     # Set axis limits and formatting
@@ -256,13 +268,13 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
     mean_handles = [h for h, l in zip(handles, labels) if '±' not in l and 'range' not in l]
     mean_labels = [l for l in labels if '±' not in l and 'range' not in l]
     ax.legend(mean_handles, mean_labels, 
-              bbox_to_anchor=(1.05, 1), 
-              loc='upper left', 
-              frameon=True,
-              fancybox=True,
-              shadow=True,
-              framealpha=0.9,
-              fontsize=10)
+            #   bbox_to_anchor=(1.05, 1), 
+              loc='lower right', 
+            #   frameon=True,
+            #   fancybox=True,
+            #   shadow=True,
+            #   framealpha=0.9,
+              fontsize=14)
 
 def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_time):
     """
@@ -276,11 +288,11 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
     for contract in df['contract'].unique():
         contract_data = df[df['contract'] == contract]
         max_tx = contract_data['total_transactions'].max()
-        contract_sizes[contract] = 'Small Contracts' if max_tx <= 3632 else 'Large Contracts'
+        contract_sizes[contract] = 'Contratos pequenos' if max_tx <= 3632 else 'Contratos grandes'
     
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     
-    for idx, size_category in enumerate(['Small Contracts', 'Large Contracts']):
+    for idx, size_category in enumerate(['Contratos pequenos', 'Contratos grandes']):
         ax = axes[idx]
         
         # Filter data for this size category
@@ -306,19 +318,30 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
             ].sort_values('time_elapsed')
             color = algorithm_colors.get(algorithm, algorithm_colors['default'])
             
+            # Get statistics
+            final_mean = algorithm_data['mean'].iloc[-1]
+            label= '{}'.format(algorithm if algorithm != "collaborative" else "Nosso")
             # Plot mean line
             ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
-                   color=color, linewidth=2.5, label=algorithm)
+                   color=color, linewidth=2.5, label=label)
             
             # Plot standard deviation area
             ax.fill_between(algorithm_data['time_elapsed'],
                            algorithm_data['mean'] - algorithm_data['std'],
                            algorithm_data['mean'] + algorithm_data['std'],
                            color=color, alpha=0.2)
+
+            # Add final value annotation at end of line
+            ax.annotate(f'{final_mean:.1f}%', 
+                       xy=(algorithm_data['time_elapsed'].iloc[-1], final_mean),
+                       xytext=(10, 0), textcoords='offset points',
+                       color=color, fontsize=9, fontweight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
+                                edgecolor=color, alpha=0.8))
         
         # Styling
-        ax.set_xlabel('Time in Seconds', fontsize=12, fontweight='bold')
-        ax.set_ylabel('Instruction Coverage (%)', fontsize=12, fontweight='bold')
+        ax.set_xlabel('Tempo em Segundos', fontsize=14, fontweight='bold')
+        ax.set_ylabel('Cobertura de código (%)', fontsize=14, fontweight='bold')
         ax.set_title(f'{size_category}', fontsize=14, fontweight='bold')
         # ax.set_ylim(0, 100)
         ax.set_xlim(0, max_time)
@@ -336,13 +359,12 @@ def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_
     Create detailed plots for all coverage types with STD.
     """
     coverage_types = ['code', 'branch']
-    titles = [ 'Code Coverage', 'Branch Coverage']
+    titles = ['Cobertura de Código', 'Cobertura de Ramificações']
     
-    fig, axes = plt.subplots(1, 2, figsize=(18, 9))
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     
     for idx, (coverage_type, title) in enumerate(zip(coverage_types, titles)):
         ax = axes[idx]
-        
         
         if smooth_data.empty:
             ax.text(0.5, 0.5, 'No data', transform=ax.transAxes, 
@@ -355,33 +377,49 @@ def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_
                 (smooth_data['algorithm'] == algorithm) & 
                 (smooth_data['coverage_type'] == coverage_type)
             ].sort_values('time_elapsed')
+            
+            if algorithm_data.empty:
+                continue
+                
             color = algorithm_colors.get(algorithm, algorithm_colors['default'])
             
+            # Get statistics
+            final_mean = algorithm_data['mean'].iloc[-1]
+            label = '{}'.format(
+                algorithm if algorithm != "collaborative" else "Nosso"
+            )
+            
             ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
-                   color=color, linewidth=2, label=algorithm)
+                   color=color, linewidth=2, label=label)
             
             ax.fill_between(algorithm_data['time_elapsed'],
                            algorithm_data['mean'] - algorithm_data['std'],
                            algorithm_data['mean'] + algorithm_data['std'],
                            color=color, alpha=0.2)
+             
+            # Add final value annotation at end of line
+            ax.annotate(f'{final_mean:.1f}%', 
+                       xy=(algorithm_data['time_elapsed'].iloc[-1], final_mean),
+                       xytext=(10, 0), textcoords='offset points',
+                       color=color, fontsize=11, fontweight='bold',
+                       bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
+                                edgecolor=color, alpha=0.8))
         
         # Styling
-        ax.set_xlabel('Time (seconds)', fontsize=11)
-        ax.set_ylabel(f'{title} (%)', fontsize=11)
-        ax.set_title(title, fontsize=13, fontweight='bold')
-        # ax.set_ylim(0, 100)
+        ax.set_xlabel('Tempo em Segundos', fontsize=14, fontweight='bold')
+        ax.set_ylabel(f'{title} (%)', fontsize=14, fontweight='bold')
+        ax.set_title(title, fontsize=16, fontweight='bold')
         ax.set_xlim(0, max_time)
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
         ax.grid(True, alpha=0.3)
         
-        if idx == 0:  # Only show legend on first plot
-            ax.legend()
+        # Show legend on ALL plots
+        ax.legend(loc='lower right', fontsize=14)
     
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'detailed_coverage_with_std.png'), 
                 dpi=300, bbox_inches='tight', facecolor='white')
     plt.close()
-
 def generate_enhanced_report(df: pd.DataFrame, smooth_df: pd.DataFrame, output_dir: str = "conference_plots"):
     """
     Generate enhanced report with variability statistics.
