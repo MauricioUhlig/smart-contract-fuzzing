@@ -75,7 +75,6 @@ def create_coverage_dataframe(json_data: List[Dict[str, Any]]) -> pd.DataFrame:
                     'unique_transactions': gen_data['unique_transactions'],
                     'code_coverage': gen_data['code_coverage'],
                     'branch_coverage': gen_data['branch_coverage'],
-                    'instruction_coverage': gen_data.get('instruction_coverage', gen_data.get('code_coverage', 0)),
                     'total_execution_time': file_data[contract_name].get('execution_time', 0),
                     'memory_consumption': file_data[contract_name].get('memory_consumption', 0),
                     'seed': file_data[contract_name].get('seed', 0),
@@ -112,24 +111,43 @@ def create_smooth_time_series_with_std(df: pd.DataFrame, time_interval: float = 
                 continue
                 
             # Find all data points at or before this time point for each contract
-            coverage_values = []
+            code_coverage_values = []
+            branch_coverage_values = []
             for contract in algorithm_data['contract'].unique():
                 contract_data = algorithm_data[algorithm_data['contract'] == contract]
                 time_slice = contract_data[contract_data['time_elapsed'] <= time_point]
                 if not time_slice.empty:
                     latest_data = time_slice.iloc[-1]
-                    coverage_values.append(latest_data['instruction_coverage'])
-            
-            if coverage_values:
-                smooth_records.append({
+                    code_coverage_values.append(latest_data['code_coverage'])
+                    branch_coverage_values.append(latest_data['branch_coverage'])
+        
+
+            if code_coverage_values:
+                # Separate records for code and branch coverage
+                code_coverage_record = {
                     'algorithm': algorithm,
                     'time_elapsed': time_point,
-                    'mean_coverage': np.mean(coverage_values),
-                    'std_coverage': np.std(coverage_values),
-                    'min_coverage': np.min(coverage_values),
-                    'max_coverage': np.max(coverage_values),
-                    'sample_size': len(coverage_values)
-                })
+                    'coverage_type': 'code',
+                    'mean': np.mean(code_coverage_values),
+                    'std': np.std(code_coverage_values),
+                    'min': np.min(code_coverage_values),
+                    'max': np.max(code_coverage_values),
+                    'sample_size': len(code_coverage_values)
+                }
+                smooth_records.append(code_coverage_record)    
+                
+            if branch_coverage_values:
+                branch_coverage_record = {
+                    'algorithm': algorithm,
+                    'time_elapsed': time_point,
+                    'coverage_type': 'branch',
+                    'mean': np.mean(branch_coverage_values),
+                    'std': np.std(branch_coverage_values),
+                    'min': np.min(branch_coverage_values),
+                    'max': np.max(branch_coverage_values),
+                    'sample_size': len(branch_coverage_values)
+                }
+                smooth_records.append(branch_coverage_record)
     
     return pd.DataFrame(smooth_records)
 
@@ -152,37 +170,32 @@ def create_conference_style_plots_with_std(df: pd.DataFrame, smooth_df: pd.DataF
     # Enhanced color palette for algorithms
     algorithm_colors = {
         'collaborative': '#1f77b4',  # Blue
-        'pyswarms': '#ff7f0e',         # Orange
-        'pso': '#2ca02c',       # Green
+        'confuzzius': '#ff7f0e',     # Orange
 
-        'Echidna': '#d62728',     # Red
-        'Harvey': '#9467bd',      # Purple
-        'Manticore': '#8c564b',   # Brown
-        'Slither': '#e377c2',     # Pink
         'default': '#7f7f7f'      # Gray for others
     }
     
-    # Plot 1: Main Instruction Coverage Comparison with STD
+    # Plot 1: Main code Coverage Comparison with STD
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
     
-    _plot_instruction_coverage_with_std(ax, smooth_df, algorithm_colors, max_time)
+    _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'instruction_coverage_with_std.png'), 
+    plt.savefig(os.path.join(output_dir, 'code_coverage_with_std.png'), 
                 dpi=300, bbox_inches='tight', facecolor='white')
-    plt.savefig(os.path.join(output_dir, 'instruction_coverage_with_std.pdf'), 
-                bbox_inches='tight', facecolor='white')
+    # plt.savefig(os.path.join(output_dir, 'code_coverage_with_std.pdf'), 
+    #             bbox_inches='tight', facecolor='white')
     plt.close()
     
     # Plot 2: Small vs Large Contracts with STD
     _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_time)
     
     # Plot 3: All coverage types with STD
-    _create_detailed_coverage_plots_with_std(df, output_dir, algorithm_colors, max_time)
+    _create_detailed_coverage_plots_with_std(smooth_df, output_dir, algorithm_colors, max_time)
 
-def _plot_instruction_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
+def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
     """
-    Plot instruction coverage with standard deviation borders.
+    Plot code coverage with standard deviation borders.
     """
     if smooth_df.empty:
         ax.text(0.5, 0.5, 'No data available', transform=ax.transAxes, 
@@ -191,7 +204,11 @@ def _plot_instruction_coverage_with_std(ax, smooth_df, algorithm_colors, max_tim
     
     # Plot each algorithm with std borders
     for algorithm in smooth_df['algorithm'].unique():
-        algorithm_data = smooth_df[smooth_df['algorithm'] == algorithm].sort_values('time_elapsed')
+        algorithm_data = smooth_df[
+                (smooth_df['algorithm'] == algorithm) & 
+                (smooth_df['coverage_type'] == 'code')
+            ].sort_values('time_elapsed')
+        
         
         if algorithm_data.empty:
             continue
@@ -199,36 +216,36 @@ def _plot_instruction_coverage_with_std(ax, smooth_df, algorithm_colors, max_tim
         color = algorithm_colors.get(algorithm, algorithm_colors['default'])
         
         # Plot mean line
-        ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean_coverage'],
+        ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
                color=color, linewidth=3, label=algorithm, alpha=0.9)
         
         # Plot standard deviation area
         ax.fill_between(algorithm_data['time_elapsed'],
-                       algorithm_data['mean_coverage'] - algorithm_data['std_coverage'],
-                       algorithm_data['mean_coverage'] + algorithm_data['std_coverage'],
+                       algorithm_data['mean'] - algorithm_data['std'],
+                       algorithm_data['mean'] + algorithm_data['std'],
                        color=color, alpha=0.2, label=f'{algorithm} ±1σ')
         
         # Plot min/max borders (optional, more transparent)
         ax.fill_between(algorithm_data['time_elapsed'],
-                       algorithm_data['min_coverage'],
-                       algorithm_data['max_coverage'],
+                       algorithm_data['min'],
+                       algorithm_data['max'],
                        color=color, alpha=0.1, label=f'{algorithm} range')
     
     # Enhanced styling
     ax.set_xlabel('Time in Seconds', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Instruction Coverage (%)', fontsize=14, fontweight='bold')
-    ax.set_title('Overall Instruction Coverage Over Time with Variability', 
+    ax.set_ylabel('Code Coverage (%)', fontsize=14, fontweight='bold')
+    ax.set_title('Overall Code Coverage Over Time with Variability', 
                  fontsize=16, fontweight='bold', pad=20)
     
     # Set axis limits and formatting
-    ax.set_ylim(0, 100)
+    # ax.set_ylim(0, 100)
     ax.set_xlim(0, max_time)
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
     
-    # Set x-axis ticks
-    x_ticks = np.arange(0, max_time + 100, 100)
-    ax.set_xticks(x_ticks)
-    ax.set_xticklabels([str(int(x)) for x in x_ticks])
+    # # Set x-axis ticks
+    # x_ticks = np.arange(0, max_time + 100, 100)
+    # ax.set_xticks(x_ticks)
+    # ax.set_xticklabels([str(int(x)) for x in x_ticks])
     
     # Grid and legend
     ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
@@ -283,24 +300,27 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
         
         # Plot each algorithm
         for algorithm in smooth_size_data['algorithm'].unique():
-            algorithm_data = smooth_size_data[smooth_size_data['algorithm'] == algorithm].sort_values('time_elapsed')
+            algorithm_data = smooth_size_data[
+                (smooth_size_data['algorithm'] == algorithm) & 
+                (smooth_size_data['coverage_type'] == 'code')
+            ].sort_values('time_elapsed')
             color = algorithm_colors.get(algorithm, algorithm_colors['default'])
             
             # Plot mean line
-            ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean_coverage'],
+            ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
                    color=color, linewidth=2.5, label=algorithm)
             
             # Plot standard deviation area
             ax.fill_between(algorithm_data['time_elapsed'],
-                           algorithm_data['mean_coverage'] - algorithm_data['std_coverage'],
-                           algorithm_data['mean_coverage'] + algorithm_data['std_coverage'],
+                           algorithm_data['mean'] - algorithm_data['std'],
+                           algorithm_data['mean'] + algorithm_data['std'],
                            color=color, alpha=0.2)
         
         # Styling
         ax.set_xlabel('Time in Seconds', fontsize=12, fontweight='bold')
         ax.set_ylabel('Instruction Coverage (%)', fontsize=12, fontweight='bold')
         ax.set_title(f'{size_category}', fontsize=14, fontweight='bold')
-        ax.set_ylim(0, 100)
+        # ax.set_ylim(0, 100)
         ax.set_xlim(0, max_time)
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
         ax.grid(True, alpha=0.3)
@@ -311,24 +331,18 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
                 dpi=300, bbox_inches='tight', facecolor='white')
     plt.close()
 
-def _create_detailed_coverage_plots_with_std(df, output_dir, algorithm_colors, max_time):
+def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_colors, max_time):
     """
     Create detailed plots for all coverage types with STD.
     """
-    coverage_types = ['instruction_coverage', 'code_coverage', 'branch_coverage']
-    titles = ['Instruction Coverage', 'Code Coverage', 'Branch Coverage']
+    coverage_types = ['code', 'branch']
+    titles = [ 'Code Coverage', 'Branch Coverage']
     
-    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
+    fig, axes = plt.subplots(1, 2, figsize=(18, 9))
     
     for idx, (coverage_type, title) in enumerate(zip(coverage_types, titles)):
         ax = axes[idx]
         
-        # Create temporary DataFrame for this coverage type
-        temp_df = df.copy()
-        temp_df['current_coverage'] = temp_df[coverage_type]
-        
-        # Create smooth time series
-        smooth_data = create_smooth_time_series_with_std(temp_df, max_time=max_time)
         
         if smooth_data.empty:
             ax.text(0.5, 0.5, 'No data', transform=ax.transAxes, 
@@ -337,22 +351,25 @@ def _create_detailed_coverage_plots_with_std(df, output_dir, algorithm_colors, m
         
         # Plot each algorithm
         for algorithm in smooth_data['algorithm'].unique():
-            algorithm_data = smooth_data[smooth_data['algorithm'] == algorithm].sort_values('time_elapsed')
+            algorithm_data = smooth_data[
+                (smooth_data['algorithm'] == algorithm) & 
+                (smooth_data['coverage_type'] == coverage_type)
+            ].sort_values('time_elapsed')
             color = algorithm_colors.get(algorithm, algorithm_colors['default'])
             
-            ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean_coverage'],
+            ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
                    color=color, linewidth=2, label=algorithm)
             
             ax.fill_between(algorithm_data['time_elapsed'],
-                           algorithm_data['mean_coverage'] - algorithm_data['std_coverage'],
-                           algorithm_data['mean_coverage'] + algorithm_data['std_coverage'],
+                           algorithm_data['mean'] - algorithm_data['std'],
+                           algorithm_data['mean'] + algorithm_data['std'],
                            color=color, alpha=0.2)
         
         # Styling
         ax.set_xlabel('Time (seconds)', fontsize=11)
         ax.set_ylabel(f'{title} (%)', fontsize=11)
         ax.set_title(title, fontsize=13, fontweight='bold')
-        ax.set_ylim(0, 100)
+        # ax.set_ylim(0, 100)
         ax.set_xlim(0, max_time)
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
         ax.grid(True, alpha=0.3)
@@ -384,8 +401,8 @@ def generate_enhanced_report(df: pd.DataFrame, smooth_df: pd.DataFrame, output_d
         
         if not smooth_df.empty:
             variability_stats = smooth_df.groupby('algorithm').agg({
-                'mean_coverage': ['mean', 'max'],
-                'std_coverage': ['mean', 'max'],
+                'mean': ['mean', 'max'],
+                'std': ['mean', 'max'],
                 'sample_size': 'mean'
             }).round(2)
             
@@ -397,11 +414,11 @@ def generate_enhanced_report(df: pd.DataFrame, smooth_df: pd.DataFrame, output_d
         f.write("-" * 30 + "\n")
         
         final_coverage = df.groupby(['algorithm', 'contract']).agg({
-            'instruction_coverage': 'last'
+            'code_coverage': 'last'
         }).reset_index()
         
         final_stats = final_coverage.groupby('algorithm').agg({
-            'instruction_coverage': ['mean', 'std', 'min', 'max']
+            'code_coverage': ['mean', 'std', 'min', 'max']
         }).round(2)
         
         f.write(final_stats.to_string())
@@ -458,7 +475,7 @@ def create_conference_style_graphics_with_std(folder_path: str, output_dir: str 
     
     print(f"\nConference-style graphics with STD created in: {output_dir}")
     print("Files generated:")
-    print("  - instruction_coverage_with_std.png/.pdf (Main plot with variability)")
+    print("  - code_coverage_with_std.png (Main plot with variability)")
     print("  - contract_size_comparison_with_std.png")
     print("  - detailed_coverage_with_std.png")
     print("  - performance_analysis_with_variability.txt")
@@ -470,7 +487,7 @@ def create_conference_style_graphics_with_std(folder_path: str, output_dir: str 
 if __name__ == "__main__":
     # You can change max_time to any value you want (e.g., 300, 600, 900 seconds)
     folder_path = "results"
-    max_time_seconds = 300  # Change this value to set X-axis upper bound
+    max_time_seconds = 60  # Change this value to set X-axis upper bound
     
     df, smooth_df = create_conference_style_graphics_with_std(
         folder_path=folder_path,
@@ -482,4 +499,4 @@ if __name__ == "__main__":
     if df is not None:
         print(f"\nAnalysis completed with X-axis limit: {max_time_seconds} seconds")
         print("\nSample of smoothed data with STD:")
-        print(smooth_df[['algorithm', 'time_elapsed', 'mean_coverage', 'std_coverage']].head(10))
+        print(smooth_df[['algorithm', 'time_elapsed', 'mean', 'std']].head(10))
