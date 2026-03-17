@@ -169,10 +169,10 @@ def create_conference_style_plots_with_std(df: pd.DataFrame, smooth_df: pd.DataF
     
     # Enhanced color palette for algorithms
     algorithm_colors = {
-        'collaborative': '#1f77b4',  # Blue
-        'confuzzius': '#ff7f0e',     # Orange
+        'collaborative': '#000000',  # Blue
+        'confuzzius': '#808080',     # Orange
 
-        'default': '#7f7f7f'      # Gray for others
+        'default': '#999999'      # Gray for others
     }
     
     # Plot 1: Main code Coverage Comparison with STD
@@ -199,7 +199,7 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
     """
     if smooth_df.empty:
         ax.text(0.5, 0.5, 'No data available', transform=ax.transAxes, 
-                ha='center', va='center', fontsize=12)
+                ha='center', va='center', fontsize=14)
         return
     
     # Plot each algorithm with std borders
@@ -218,16 +218,17 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
         
         # Get statistics
         final_mean = algorithm_data['mean'].iloc[-1]
-        label= '{}'.format(algorithm if algorithm != "collaborative" else "Nosso")
+        label= '{}'.format(algorithm if algorithm != "collaborative" else "DivFuzz")
+        label= '{}'.format(label if label != "confuzzius" else "Confuzzius")
         # Plot mean line
         ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
                color=color, linewidth=3, label=label, alpha=0.9)
         
         # Plot standard deviation area
-        ax.fill_between(algorithm_data['time_elapsed'],
-                       algorithm_data['mean'] - algorithm_data['std'],
-                       algorithm_data['mean'] + algorithm_data['std'],
-                       color=color, alpha=0.2, label=f'{algorithm} ±1')
+        # ax.fill_between(algorithm_data['time_elapsed'],
+        #                algorithm_data['mean'] - algorithm_data['std'],
+        #                algorithm_data['mean'] + algorithm_data['std'],
+        #                color=color, alpha=0.2, label=f'{algorithm} ±1')
         
         # # Plot min/max borders (optional, more transparent)
         # ax.fill_between(algorithm_data['time_elapsed'],
@@ -239,7 +240,7 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
         ax.annotate(f'{final_mean:.1f}%', 
                     xy=(algorithm_data['time_elapsed'].iloc[-1], final_mean),
                     xytext=(10, 0), textcoords='offset points',
-                    color=color, fontsize=11, fontweight='bold',
+                    color=color, fontsize=14, fontweight='bold',
                     bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
                             edgecolor=color, alpha=0.8))
 
@@ -301,7 +302,7 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
         
         if size_data.empty:
             ax.text(0.5, 0.5, f'No {size_category.lower()} data', 
-                    transform=ax.transAxes, ha='center', va='center', fontsize=12)
+                    transform=ax.transAxes, ha='center', va='center', fontsize=14)
             continue
         
         # Create smooth time series for this size category
@@ -320,22 +321,23 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
             
             # Get statistics
             final_mean = algorithm_data['mean'].iloc[-1]
-            label= '{}'.format(algorithm if algorithm != "collaborative" else "Nosso")
+            label= '{}'.format(algorithm if algorithm != "collaborative" else "DivFuzz")
+            label= '{}'.format(label if label != "confuzzius" else "Confuzzius")
             # Plot mean line
             ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
                    color=color, linewidth=2.5, label=label)
             
             # Plot standard deviation area
-            ax.fill_between(algorithm_data['time_elapsed'],
-                           algorithm_data['mean'] - algorithm_data['std'],
-                           algorithm_data['mean'] + algorithm_data['std'],
-                           color=color, alpha=0.2)
+            # ax.fill_between(algorithm_data['time_elapsed'],
+            #                algorithm_data['mean'] - algorithm_data['std'],
+            #                algorithm_data['mean'] + algorithm_data['std'],
+            #                color=color, alpha=0.2)
 
             # Add final value annotation at end of line
             ax.annotate(f'{final_mean:.1f}%', 
                        xy=(algorithm_data['time_elapsed'].iloc[-1], final_mean),
                        xytext=(10, 0), textcoords='offset points',
-                       color=color, fontsize=9, fontweight='bold',
+                       color=color, fontsize=14, fontweight='bold',
                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
                                 edgecolor=color, alpha=0.8))
         
@@ -368,7 +370,7 @@ def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_
         
         if smooth_data.empty:
             ax.text(0.5, 0.5, 'No data', transform=ax.transAxes, 
-                    ha='center', va='center', fontsize=12)
+                    ha='center', va='center', fontsize=14)
             continue
         
         # Plot each algorithm
@@ -386,22 +388,22 @@ def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_
             # Get statistics
             final_mean = algorithm_data['mean'].iloc[-1]
             label = '{}'.format(
-                algorithm if algorithm != "collaborative" else "Nosso"
+                algorithm if algorithm != "collaborative" else "DivFuzz"
             )
-            
+            label= '{}'.format(label if label != "confuzzius" else "Confuzzius")
             ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
                    color=color, linewidth=2, label=label)
             
-            ax.fill_between(algorithm_data['time_elapsed'],
-                           algorithm_data['mean'] - algorithm_data['std'],
-                           algorithm_data['mean'] + algorithm_data['std'],
-                           color=color, alpha=0.2)
+            # ax.fill_between(algorithm_data['time_elapsed'],
+            #                algorithm_data['mean'] - algorithm_data['std'],
+            #                algorithm_data['mean'] + algorithm_data['std'],
+            #                color=color, alpha=0.2)
              
             # Add final value annotation at end of line
             ax.annotate(f'{final_mean:.1f}%', 
                        xy=(algorithm_data['time_elapsed'].iloc[-1], final_mean),
                        xytext=(10, 0), textcoords='offset points',
-                       color=color, fontsize=11, fontweight='bold',
+                       color=color, fontsize=14, fontweight='bold',
                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', 
                                 edgecolor=color, alpha=0.8))
         
