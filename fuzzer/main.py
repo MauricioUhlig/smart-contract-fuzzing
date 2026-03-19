@@ -89,7 +89,7 @@ class Fuzzer:
                     result = self.instrumented_evm.deploy_contract(transaction['from'], transaction['input'], int(transaction['value']), int(transaction['gas']), int(transaction['gasPrice']))
                     if result.is_error:
                         logger.error("Problem while deploying contract %s using account %s. Error message: %s", self.contract_name, transaction['from'], result._error)
-                        sys.exit(-2)
+                        return #sys.exit(-2)
                     else:
                         contract_address = encode_hex(result.msg.storage_address)
                         self.instrumented_evm.accounts.append(contract_address)
@@ -119,7 +119,7 @@ class Fuzzer:
                     result = self.instrumented_evm.deploy_contract(self.instrumented_evm.accounts[0], self.deployement_bytecode)
                     if result.is_error:
                         logger.error("Problem while deploying contract %s using account %s. Error message: %s", self.contract_name, self.instrumented_evm.accounts[0], result._error)
-                        sys.exit(-2)
+                        return #sys.exit(-2)
                     else:
                         contract_address = encode_hex(result.msg.storage_address)
                         self.instrumented_evm.accounts.append(contract_address)
@@ -154,11 +154,11 @@ class Fuzzer:
             mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
         if self.args.diversity:
             selection = DiversityLinearRankingSelection(env=self.env)
-            crossover = DataDependencyCrossover(pc=settings.PROBABILITY_CROSSOVER, env=self.env)
+            crossover = DiversityCrossover(pc=settings.PROBABILITY_CROSSOVER)
             mutation = DiversityMutation(pm=settings.PROBABILITY_MUTATION)
         else:
             selection = LinearRankingSelection()
-            crossover = Crossover(pc=settings.PROBABILITY_CROSSOVER)
+            crossover = DataDependencyCrossover(pc=settings.PROBABILITY_CROSSOVER, env=self.env)
             mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
             
 
@@ -248,7 +248,8 @@ def main():
             instrumented_evm.set_vm(settings.BLOCK_HEIGHT)
         else:
             logger.error("Unsupported input file: " + args.blockchain_state)
-            sys.exit(-1)
+            # sys.exit(-1)
+            return
 
     # Compile source code to get deployment bytecode, runtime bytecode and ABI
     if args.source:
@@ -256,7 +257,8 @@ def main():
             compiler_output = compile(args.solc_version, settings.EVM_VERSION, args.source)
             if not compiler_output:
                 logger.error("No compiler output for: " + args.source)
-                sys.exit(-1)
+                # sys.exit(-1)
+                return
             for contract_name, contract in compiler_output['contracts'][args.source].items():
                 if args.contract and contract_name != args.contract:
                     continue
@@ -265,7 +267,8 @@ def main():
                     Fuzzer(contract_name, contract["abi"], contract['evm']['bytecode']['object'], contract['evm']['deployedBytecode']['object'], instrumented_evm, blockchain_state, solver, args, seed, source_map).run()
         else:
             logger.error("Unsupported input file: " + args.source)
-            sys.exit(-1)
+            # sys.exit(-1)
+            return
 
     if args.abi:
         with open(args.abi) as json_file:

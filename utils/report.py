@@ -2,6 +2,7 @@ import os
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import seaborn as sns
 from datetime import datetime
 from typing import List, Dict, Any
@@ -203,7 +204,7 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
         return
     
     # Plot each algorithm with std borders
-    for algorithm in smooth_df['algorithm'].unique():
+    for algorithm in np.flip(smooth_df['algorithm'].unique()):
         algorithm_data = smooth_df[
                 (smooth_df['algorithm'] == algorithm) & 
                 (smooth_df['coverage_type'] == 'code')
@@ -253,6 +254,7 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
     # Set axis limits and formatting
     # ax.set_ylim(0, 100)
     ax.set_xlim(0, max_time)
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
     
     # # Set x-axis ticks
@@ -312,7 +314,7 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
             continue
         
         # Plot each algorithm
-        for algorithm in smooth_size_data['algorithm'].unique():
+        for algorithm in np.flip(smooth_size_data['algorithm'].unique()):
             algorithm_data = smooth_size_data[
                 (smooth_size_data['algorithm'] == algorithm) & 
                 (smooth_size_data['coverage_type'] == 'code')
@@ -347,6 +349,7 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
         ax.set_title(f'{size_category}', fontsize=14, fontweight='bold')
         # ax.set_ylim(0, 100)
         ax.set_xlim(0, max_time)
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
         ax.grid(True, alpha=0.3)
         ax.legend()
@@ -374,7 +377,7 @@ def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_
             continue
         
         # Plot each algorithm
-        for algorithm in smooth_data['algorithm'].unique():
+        for algorithm in np.flip(smooth_data['algorithm'].unique()):
             algorithm_data = smooth_data[
                 (smooth_data['algorithm'] == algorithm) & 
                 (smooth_data['coverage_type'] == coverage_type)
@@ -412,6 +415,7 @@ def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_
         ax.set_ylabel(f'{title} (%)', fontsize=14, fontweight='bold')
         ax.set_title(title, fontsize=16, fontweight='bold')
         ax.set_xlim(0, max_time)
+        ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
         ax.grid(True, alpha=0.3)
         
@@ -527,7 +531,7 @@ def create_conference_style_graphics_with_std(folder_path: str, output_dir: str 
 if __name__ == "__main__":
     # You can change max_time to any value you want (e.g., 300, 600, 900 seconds)
     folder_path = "results"
-    max_time_seconds = 60  # Change this value to set X-axis upper bound
+    max_time_seconds = 120  # Change this value to set X-axis upper bound
     
     df, smooth_df = create_conference_style_graphics_with_std(
         folder_path=folder_path,

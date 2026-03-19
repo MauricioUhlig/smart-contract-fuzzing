@@ -87,9 +87,9 @@
                 "${workspaceFolder}/${input:basePathContractsToRun}",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-t", "60",
+                "-t", "120",
 
-                "--algorithm", "confuzzius",
+                 "--algorithm", "confuzzius",
 
                 // "--algorithm", "collaborative",
                 // "--population-size", "100",
