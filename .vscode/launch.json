@@ -89,16 +89,16 @@
                 "--evm", "byzantium",
                 "-t", "120",
 
-                 "--algorithm", "confuzzius",
+                //  "--algorithm", "confuzzius",
 
-                // "--algorithm", "collaborative",
-                // "--population-size", "100",
-                // "--probability-crossover", "0.9",
-                // "--probability-mutation", "0.25",
-                // "--data-dependency-weight", "0.5",
-                // "--branch-weight", "0.5",
-                // //"--unique-branch-weight", "5.0",
-                // "--diversity", "1"
+                "--algorithm", "collaborative",
+                "--population-size", "100",
+                "--probability-crossover", "0.9",
+                "--probability-mutation", "0.25",
+                "--data-dependency-weight", "0.5",
+                "--branch-weight", "0.5",
+                //"--unique-branch-weight", "5.0",
+                "--diversity", "1"
             ]
         },
         {

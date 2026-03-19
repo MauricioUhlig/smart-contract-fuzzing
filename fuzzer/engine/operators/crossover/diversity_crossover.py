@@ -33,7 +33,7 @@ class DiversityCrossover(Crossover):
         max_length = settings.MAX_INDIVIDUAL_LENGTH
         
         # Early termination check
-        if len(_father.chromosome) + len(_mother.chromosome) > max_length:
+        if len(_father.chromosome) > max_length or len(_mother.chromosome) > max_length:
             return _father, _mother
         
         # Use slicing instead of deepcopy for chromosome access
