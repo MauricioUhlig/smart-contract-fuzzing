@@ -215,7 +215,7 @@ class CollaborativeEngine:
         
         for individual in self.population.individuals:
             individual_hash = individual.hash
-            fitness_scores[individual_hash] = data_dependencie[individual_hash] * self.data_dependency_weight - (branch_coverage[individual_hash] * self.branch_weight / (unique_contributions[individual_hash] * self.unique_branch_weight +1))
+            fitness_scores[individual_hash] = data_dependencie[individual_hash] * self.data_dependency_weight + (branch_coverage[individual_hash] * self.branch_weight * (unique_contributions[individual_hash] +1) * self.unique_branch_weight)
         
         return fitness_scores
         

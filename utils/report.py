@@ -254,7 +254,7 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
     # Set axis limits and formatting
     # ax.set_ylim(0, 100)
     ax.set_xlim(0, max_time)
-    ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
+    # ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
     ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
     
     # # Set x-axis ticks
@@ -349,7 +349,7 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
         ax.set_title(f'{size_category}', fontsize=14, fontweight='bold')
         # ax.set_ylim(0, 100)
         ax.set_xlim(0, max_time)
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
+        # ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
         ax.grid(True, alpha=0.3)
         ax.legend()
@@ -415,7 +415,7 @@ def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_
         ax.set_ylabel(f'{title} (%)', fontsize=14, fontweight='bold')
         ax.set_title(title, fontsize=16, fontweight='bold')
         ax.set_xlim(0, max_time)
-        ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
+        # ax.xaxis.set_major_locator(ticker.MultipleLocator(10))
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{int(x)}%'))
         ax.grid(True, alpha=0.3)
         
@@ -527,11 +527,18 @@ def create_conference_style_graphics_with_std(folder_path: str, output_dir: str 
     
     return df, smooth_df
 
+def create_graphics_from_cache(output_dir, max_time):
+    df = pd.read_csv(os.path.join(output_dir, 'performance_data.csv'))
+    smooth_df = pd.read_csv(os.path.join(output_dir, 'smooth_performance_with_std.csv'))
+
+    create_conference_style_plots_with_std(df, smooth_df, output_dir, max_time)
+
+
 # Example usage with configurable max_time
 if __name__ == "__main__":
     # You can change max_time to any value you want (e.g., 300, 600, 900 seconds)
     folder_path = "results"
-    max_time_seconds = 120  # Change this value to set X-axis upper bound
+    max_time_seconds = 600  # Change this value to set X-axis upper bound
     
     df, smooth_df = create_conference_style_graphics_with_std(
         folder_path=folder_path,
@@ -539,7 +546,9 @@ if __name__ == "__main__":
         time_interval=2.0,
         max_time=max_time_seconds
     )
-    
+
+    # create_graphics_from_cache("conference_results_with_std",max_time_seconds )
+
     if df is not None:
         print(f"\nAnalysis completed with X-axis limit: {max_time_seconds} seconds")
         print("\nSample of smoothed data with STD:")

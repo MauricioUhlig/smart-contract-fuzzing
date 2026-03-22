@@ -87,17 +87,17 @@
                 "${workspaceFolder}/${input:basePathContractsToRun}",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-t", "120",
+                "-t", "600",
 
-                //  "--algorithm", "confuzzius",
+                // "--algorithm", "confuzzius",
 
                 "--algorithm", "collaborative",
                 "--population-size", "100",
-                "--probability-crossover", "0.9",
-                "--probability-mutation", "0.25",
-                "--data-dependency-weight", "0.5",
-                "--branch-weight", "0.5",
-                //"--unique-branch-weight", "5.0",
+                "--probability-crossover", "0.9", // 0.9 e 0.5 cheguei em 92%
+                "--probability-mutation", "0.20", // 0.2  cheguei em 92%
+                "--data-dependency-weight", "0.6", // com 0.6, cheguei em 91.9%
+                "--branch-weight", "1",
+                "--unique-branch-weight", "2.0",
                 "--diversity", "1"
             ]
         },
@@ -149,7 +149,7 @@
             "id": "ouputFileToSaveExtractedContracts",
             "type": "promptString",
             "description": "Folder where to extract contracts",
-            "default": "utils/result-smartbugs-curated.json",
+            "default": "utils/result-small.json",
         },
         { 
             "id": "basePathContractsToRun",
