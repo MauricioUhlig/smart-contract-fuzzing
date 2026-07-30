@@ -109,6 +109,13 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Vulnerability Report - Simple",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/utils/vulnerability_report_simple.py",
+            "console": "integratedTerminal"
+        },
+        {
             "name": "Coverage Report",
             "type": "debugpy",
             "request": "launch",
