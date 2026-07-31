@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-MAINTAINER Christof Torres (christof.torres@uni.lu)
+MAINTAINER Mauricio Uhlih (mauriciojastrowuhlig@gmail.com)
 
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update

@@ -16,7 +16,7 @@ from z3 import Solver
 from evm import InstrumentedEVM
 from detectors import DetectorExecutor
 from engine import EvolutionaryFuzzingEngine
-from engine.collaborative_engine import CollaborativeEngine
+from engine.divfuzz_engine import DivFuzzEngine
 from engine.components import Generator, Individual, Population
 from engine.analysis import SymbolicTaintAnalyzer
 from engine.analysis import ExecutionTraceAnalyzer
@@ -162,9 +162,9 @@ class Fuzzer:
             mutation = Mutation(pm=settings.PROBABILITY_MUTATION)
             
 
-        if self.args.algorithm == 'collaborative':
-            # Create Collaborative Diversity Engine
-            engine = CollaborativeEngine(
+        if self.args.algorithm == 'divfuzz':
+            # Create divfuzz Diversity Engine
+            engine = divfuzzEngine(
                 population=population,
                 generator=generator,
                 selection=selection,
@@ -187,7 +187,7 @@ class Fuzzer:
         engine.analysis.append(ExecutionTraceAnalyzer(self.env))
         self.env.execution_begin = time.time()
         self.env.population = population
-        if self.args.algorithm == 'collaborative':
+        if self.args.algorithm == 'divfuzz':
             engine.run(self.env, ng=settings.GENERATIONS)
         else:
             engine.run(ng=settings.GENERATIONS)
@@ -302,9 +302,9 @@ def launch_argument_parser():
                         dest="evm_version", type=str)
 
     parser.add_argument("--algorithm", 
-                        help="Optimization algorithm: 'confuzzius' (Adaptative Genetic Algorithm, default)  or 'collaborative' (Collaborative Diversity).",
+                        help="Optimization algorithm: 'confuzzius' (Adaptative Genetic Algorithm, default)  or 'divfuzz' (divfuzz Diversity).",
                         action="store", dest="algorithm", type=str, default="confuzzius", 
-                        choices=['confuzzius', 'collaborative'])
+                        choices=['confuzzius', 'divfuzz'])
 
     # Evolutionary parameters
     group3 = parser.add_mutually_exclusive_group(required=False)
@@ -324,7 +324,7 @@ def launch_argument_parser():
                         help="Size of the population.", action="store",
                         dest="probability_mutation", type=float)
 
-    # Collaborative
+    # divfuzz
     parser.add_argument("-dw", "--data-dependency-weight",
                         help="Weight of Data Dependency on Fitness score. (Default: 1)", action="store",
                         dest="data_dependency_weight", type=float)
@@ -431,28 +431,15 @@ def launch_argument_parser():
 
 def print_logo():
     print("")
-    print("  ______          _       _   _                               ")
-    print(" |  ____|        | |     | | (_)                              ")
-    print(" | |____   _____ | |_   _| |_ _  ___  _ __   __ _ _ __ _   _  ")
-    print(" |  __\ \ / / _ \| | | | | __| |/ _ \| '_ \ / _` | '__| | | | ")
-    print(" | |___\ V / (_) | | |_| | |_| | (_) | | | | (_| | |  | |_| | ")
-    print(" |______\_/ \___/|_|\__,_|\__|_|\___/|_| |_|\__,_|_|   \__, | ")
-    print("           _____            _                  _        __/ | ")
-    print("          / ____|          | |                | |      |___/  ")
-    print("         | |     ___  _ __ | |_ _ __ __ _  ___| |_            ")
-    print("         | |    / _ \| '_ \| __| '__/ _` |/ __| __|           ")
-    print("         | |___| (_) | | | | |_| | | (_| | (__| |_            ")
-    print("          \_____\___/|_| |_|\__|_|_ \__,_|\___|\__|           ")
-    print("                                                              ")
-    print(".              ______             _                           ")
-    print("              |  ____|           (_)                          ")
-    print("              | |__ _   _ _________ _ __   __ _               ")
-    print("              |  __| | | |_  /_  / | '_ \ / _` |              ")
-    print("              | |  | |_| |/ / / /| | | | | (_| |              ")
-    print("              |_|   \__,_/___/___|_|_| |_|\__, |              ")
-    print("                                           __/ |              ")
-    print("                                          |___/               ")
-    print("")
+    print(" ██████████    ███              ███████████                                 ")
+    print("░░███░░░░███  ░░░              ░░███░░░░░░█                                 ")
+    print(" ░███   ░░███ ████  █████ █████ ░███   █ ░  █████ ████  █████████  █████████")
+    print(" ░███    ░███░░███ ░░███ ░░███  ░███████   ░░███ ░███  ░█░░░░███  ░█░░░░███ ")
+    print(" ░███    ░███ ░███  ░███  ░███  ░███░░░█    ░███ ░███  ░   ███░   ░   ███░  ")
+    print(" ░███    ███  ░███  ░░███ ███   ░███  ░     ░███ ░███    ███░   █   ███░   █")
+    print(" ██████████   █████  ░░█████    █████       ░░████████  █████████  █████████")
+    print("░░░░░░░░░░   ░░░░░    ░░░░░    ░░░░░         ░░░░░░░░  ░░░░░░░░░  ░░░░░░░░░ ")
+    print("")                                                                   
 
 if '__main__' == __name__:
     main()

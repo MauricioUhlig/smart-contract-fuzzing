@@ -21,7 +21,7 @@
             ]
         },
         {
-            "name": "Collaborative",
+            "name": "DivFuzz",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/fuzzer/main.py",
@@ -29,14 +29,14 @@
             "args": [
                 "--source", "${workspaceFolder}/${input:contractFile}",
                 "--contract", "${input:contractName}",
-                "--algorithm", "collaborative",
+                "--algorithm", "divfuzz",
                 "--generations", "20",
                 "--population-size", "40",
                 "--probability-crossover", "0.8",
                 "--probability-mutation", "0.35",
                 "--solc", "v0.4.26",
                 "--evm", "byzantium",
-                "-r", "${workspaceFolder}/results/collaborative",
+                "-r", "${workspaceFolder}/results/divfuzz",
 
                 "--diversity", "1"
             ]
@@ -61,7 +61,7 @@
             "console": "integratedTerminal",
             "args": [
                 "${workspaceFolder}/${input:ouputFileToSaveExtractedContracts}",
-                "--algorithm", "collaborative",
+                "--algorithm", "divfuzz",
                 "--generations", "20",
                 "--population-size", "40",
                 "--diversity-weight", "0.5",
@@ -91,7 +91,7 @@
 
                 // "--algorithm", "confuzzius",
 
-                "--algorithm", "collaborative",
+                "--algorithm", "divfuzz",
                 "--population-size", "100",
                 "--probability-crossover", "0.9", // 0.9 e 0.5 cheguei em 92%
                 "--probability-mutation", "0.20", // 0.2  cheguei em 92%

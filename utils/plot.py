@@ -18,7 +18,7 @@ def create_conference_style_plots_with_std(df, output_dir, max_time):
     sns.set_style("whitegrid")
     
     algorithm_colors = {
-        'collaborative': '#000000',  # DivFuzz
+        'divfuzz': '#000000',  # DivFuzz
         'confuzzius': '#808080',     # Confuzzius
         'default': '#999999'
     }
@@ -60,7 +60,7 @@ def _plot_coverage_with_std(ax, df, algorithm_colors, max_time, coverage_type):
         
         color = algorithm_colors.get(algorithm, algorithm_colors['default'])
         final_mean = algo_data['mean'].iloc[-1]
-        label = '{}'.format(algorithm if algorithm != "collaborative" else "DivFuzz")
+        label = '{}'.format(algorithm if algorithm != "divfuzz" else "DivFuzz")
         label = '{}'.format(label if label != "confuzzius" else "Confuzzius")
         
         ax.plot(algo_data['time_elapsed'], algo_data['mean'],
@@ -121,7 +121,7 @@ def _create_contract_size_plots(df, output_dir, algorithm_colors, max_time):
             
             color = algorithm_colors.get(algorithm, algorithm_colors['default'])
             final_mean = algo_data['mean'].iloc[-1]
-            label = '{}'.format(algorithm if algorithm != "collaborative" else "DivFuzz")
+            label = '{}'.format(algorithm if algorithm != "divfuzz" else "DivFuzz")
             label = '{}'.format(label if label != "confuzzius" else "Confuzzius")
             
             ax.plot(algo_data['time_elapsed'], algo_data['mean'],
@@ -183,7 +183,7 @@ def _create_detailed_coverage_plots(df, output_dir, algorithm_colors, max_time):
             
             color = algorithm_colors.get(algorithm, algorithm_colors['default'])
             final_mean = algo_data['mean'].iloc[-1]
-            label = '{}'.format(algorithm if algorithm != "collaborative" else "DivFuzz")
+            label = '{}'.format(algorithm if algorithm != "divfuzz" else "DivFuzz")
             label = '{}'.format(label if label != "confuzzius" else "Confuzzius")
             
             ax.plot(algo_data['time_elapsed'], algo_data['mean'],

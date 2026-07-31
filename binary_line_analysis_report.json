@@ -29,7 +29,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 1,
           "false_negatives": 0,
@@ -83,7 +83,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -110,7 +110,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "PredictTheBlockHashChallenge": {
@@ -141,7 +141,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -188,7 +188,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 2,
           "false_negatives": 0,
@@ -241,7 +241,7 @@
             91
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 3,
           "false_negatives": 1,
@@ -295,7 +295,7 @@
             127
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 3,
           "false_negatives": 5,
@@ -354,7 +354,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 3,
           "false_negatives": 0,
@@ -419,7 +419,7 @@
             12
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 1,
@@ -470,7 +470,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 3,
           "false_negatives": 0,
@@ -524,7 +524,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 1,
           "false_negatives": 0,
@@ -569,7 +569,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -617,7 +617,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 4,
           "false_negatives": 0,
@@ -665,7 +665,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -710,7 +710,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 1,
           "false_negatives": 0,
@@ -757,7 +757,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 0,
           "false_negatives": 0,
@@ -810,7 +810,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -837,7 +837,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "SafeMath": {
@@ -871,7 +871,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 1,
           "false_negatives": 0,
@@ -931,7 +931,7 @@
             175
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 5,
           "false_negatives": 4,
@@ -999,7 +999,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 6,
           "false_negatives": 0,
@@ -1066,7 +1066,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 7,
           "false_negatives": 0,
@@ -1124,7 +1124,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 3,
           "false_negatives": 0,
@@ -1175,7 +1175,7 @@
             213
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 2,
           "false_negatives": 2,
@@ -1246,7 +1246,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 3,
           "false_positives": 7,
           "false_negatives": 0,
@@ -1283,7 +1283,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 46.15
     },
     "Attacker": {
@@ -1309,7 +1309,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 2,
           "false_negatives": 0,
@@ -1362,7 +1362,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -1389,7 +1389,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "ECTools": {
@@ -1413,7 +1413,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 1,
           "false_negatives": 0,
@@ -1459,7 +1459,7 @@
             38
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 2,
           "false_negatives": 1,
@@ -1507,7 +1507,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 0,
           "false_negatives": 0,
@@ -1564,7 +1564,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 6,
           "false_negatives": 0,
@@ -1628,7 +1628,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 0,
           "false_negatives": 0,
@@ -1680,7 +1680,7 @@
             36
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 3,
           "false_positives": 0,
           "false_negatives": 3,
@@ -1748,7 +1748,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 5,
           "false_negatives": 0,
@@ -1777,7 +1777,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 28.57
     },
     "EBU": {
@@ -1803,7 +1803,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 0,
           "false_negatives": 0,
@@ -1861,7 +1861,7 @@
             141
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 6,
           "false_negatives": 2,
@@ -1929,7 +1929,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 5,
           "false_negatives": 0,
@@ -1981,7 +1981,7 @@
             28
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 1,
           "false_negatives": 1,
@@ -2045,7 +2045,7 @@
             97
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 4,
           "false_negatives": 1,
@@ -2076,14 +2076,14 @@
           ]
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 44.44
     },
     "ReentrancyDAO": {
       "file": "reentrancy/reentrancy_dao.sol",
       "known_vulnerable_lines": 1,
       "algorithm_results": {
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 2,
           "false_negatives": 0,
@@ -2106,7 +2106,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 50.0
     },
     "OddsAndEvens": {
@@ -2141,7 +2141,7 @@
             25
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 1,
@@ -2170,7 +2170,7 @@
           ]
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 28.57
     },
     "Overflow": {
@@ -2194,7 +2194,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -2236,7 +2236,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 1,
           "false_negatives": 0,
@@ -2283,7 +2283,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 2,
           "false_negatives": 0,
@@ -2344,7 +2344,7 @@
             18
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 5,
           "false_negatives": 2,
@@ -2376,7 +2376,7 @@
           ]
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 22.22
     },
     "Overflow_Add": {
@@ -2416,7 +2416,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -2443,7 +2443,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "ETH_FUND": {
@@ -2480,7 +2480,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 6,
           "false_negatives": 0,
@@ -2535,7 +2535,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 1,
           "false_negatives": 0,
@@ -2577,7 +2577,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -2609,7 +2609,7 @@
       "file": "access_control/parity_wallet_bug_1.sol",
       "known_vulnerable_lines": 3,
       "algorithm_results": {
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 7,
           "false_negatives": 3,
@@ -2672,7 +2672,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 2,
           "false_negatives": 0,
@@ -2733,7 +2733,7 @@
             23
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 3,
           "false_negatives": 2,
@@ -2804,7 +2804,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 12,
           "false_negatives": 0,
@@ -2871,7 +2871,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -2920,7 +2920,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -2981,7 +2981,7 @@
             30
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 6,
           "false_negatives": 5,
@@ -3018,7 +3018,7 @@
           ]
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 15.38
     },
     "Deck": {
@@ -3056,7 +3056,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 3,
           "false_negatives": 0,
@@ -3110,7 +3110,7 @@
             31
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 2,
           "false_negatives": 2,
@@ -3172,7 +3172,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 5,
           "false_negatives": 0,
@@ -3251,7 +3251,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 7,
           "false_negatives": 0,
@@ -3284,7 +3284,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 22.22
     },
     "DepositProxy": {
@@ -3313,7 +3313,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 2,
           "false_negatives": 0,
@@ -3360,7 +3360,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -3419,7 +3419,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 7,
           "false_negatives": 0,
@@ -3454,7 +3454,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 36.36
     },
     "BlackJack": {
@@ -3486,7 +3486,7 @@
             21
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 4,
           "false_negatives": 1,
@@ -3546,7 +3546,7 @@
             118
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 2,
           "false_negatives": 2,
@@ -3607,7 +3607,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -3634,7 +3634,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "Phishable": {
@@ -3674,7 +3674,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -3701,7 +3701,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "PERSONAL_BANK": {
@@ -3734,7 +3734,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 3,
           "false_negatives": 0,
@@ -3759,7 +3759,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 40.0
     },
     "ReturnValue": {
@@ -3794,7 +3794,7 @@
             55
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 2,
           "false_negatives": 1,
@@ -3843,7 +3843,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -3861,7 +3861,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 100.0
     },
     "VaultProxy": {
@@ -3885,7 +3885,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 2,
           "false_negatives": 0,
@@ -3932,7 +3932,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -3983,7 +3983,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -4010,7 +4010,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "RealOldFuckMaker": {
@@ -4034,7 +4034,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4079,7 +4079,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 1,
           "false_negatives": 0,
@@ -4107,7 +4107,7 @@
       "file": "arithmetic/BECToken.sol",
       "known_vulnerable_lines": 1,
       "algorithm_results": {
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4125,7 +4125,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 100.0
     },
     "HomeyJar": {
@@ -4149,7 +4149,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4197,7 +4197,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 5,
           "false_negatives": 0,
@@ -4254,7 +4254,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4296,7 +4296,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4345,7 +4345,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4389,7 +4389,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4433,7 +4433,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4475,7 +4475,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4517,7 +4517,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4542,7 +4542,7 @@
       "file": "arithmetic/BECToken.sol",
       "known_vulnerable_lines": 0,
       "algorithm_results": {
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 1,
           "false_negatives": 0,
@@ -4597,7 +4597,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 6,
           "false_negatives": 0,
@@ -4655,7 +4655,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 1,
           "false_negatives": 0,
@@ -4700,7 +4700,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -4747,7 +4747,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 3,
           "false_negatives": 0,
@@ -4812,7 +4812,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -4839,7 +4839,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "Governmental": {
@@ -4873,7 +4873,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 2,
           "false_negatives": 0,
@@ -4929,7 +4929,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 5,
           "false_negatives": 0,
@@ -4991,7 +4991,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 0,
           "false_negatives": 0,
@@ -5051,7 +5051,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 4,
           "false_negatives": 0,
@@ -5078,7 +5078,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 33.33
     },
     "RandomNumberGenerator": {
@@ -5111,7 +5111,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 0,
           "false_negatives": 0,
@@ -5155,7 +5155,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -5199,7 +5199,7 @@
             18
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 1,
@@ -5248,7 +5248,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 2,
           "false_positives": 1,
           "false_negatives": 0,
@@ -5310,7 +5310,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 7,
           "false_negatives": 0,
@@ -5343,7 +5343,7 @@
           "false_negative_lines": []
         }
       },
-      "best_algorithm": "collaborative",
+      "best_algorithm": "divfuzz",
       "best_f1": 22.22
     },
     "Puppet": {
@@ -5372,7 +5372,7 @@
             71
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 1,
           "false_negatives": 4,
@@ -5432,7 +5432,7 @@
             114
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 3,
           "false_negatives": 5,
@@ -5492,7 +5492,7 @@
             23
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 1,
           "false_negatives": 1,
@@ -5584,7 +5584,7 @@
             702
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 20,
           "false_negatives": 12,
@@ -5682,7 +5682,7 @@
           ],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 2,
           "false_negatives": 0,
@@ -5729,7 +5729,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -5779,7 +5779,7 @@
             42
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 3,
           "false_negatives": 3,
@@ -5847,7 +5847,7 @@
             46
           ]
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 8,
           "false_negatives": 2,
@@ -5889,7 +5889,7 @@
       "file": "reentrancy/modifier_reentrancy.sol",
       "known_vulnerable_lines": 0,
       "algorithm_results": {
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 0,
           "false_positives": 1,
           "false_negatives": 0,
@@ -5931,7 +5931,7 @@
           "false_positive_lines": [],
           "false_negative_lines": []
         },
-        "collaborative": {
+        "divfuzz": {
           "true_positives": 1,
           "false_positives": 0,
           "false_negatives": 0,
@@ -5964,7 +5964,7 @@
       "recall_percentage": 60.12,
       "f1_score": 38.43
     },
-    "collaborative": {
+    "divfuzz": {
       "contracts_analyzed": 108,
       "total_true_positives": 100,
       "total_false_positives": 281,

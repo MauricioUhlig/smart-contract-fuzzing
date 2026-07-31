@@ -1,8 +1,8 @@
-# Collaborative Diversity Engine Usage Guide
+# divfuzz Diversity Engine Usage Guide
 
 ## Overview
 
-The Collaborative Diversity Engine is a novel evolutionary algorithm that focuses on maintaining population diversity to achieve better group-fitness scores. Unlike traditional genetic algorithms that optimize individual fitness, this approach considers the collective performance of the entire population.
+The divfuzz Diversity Engine is a novel evolutionary algorithm that focuses on maintaining population diversity to achieve better group-fitness scores. Unlike traditional genetic algorithms that optimize individual fitness, this approach considers the collective performance of the entire population.
 
 ## Key Features
 
@@ -44,7 +44,7 @@ The Collaborative Diversity Engine is a novel evolutionary algorithm that focuse
 python main.py \
   --source contract.sol \
   --contract ContractName \
-  --algorithm collaborative \
+  --algorithm divfuzz \
   -g 50 \
   -n 20
 ```
@@ -54,7 +54,7 @@ python main.py \
 python3 fuzzer/main.py \
   --source examples/RemiCoin/contracts/RemiCoin.sol \
   --contract RemiCoin \
-  --algorithm collaborative \
+  --algorithm divfuzz \
   --generations 100 \
   --population-size 30 \
   --diversity-weight 0.4 \
@@ -68,7 +68,7 @@ python3 fuzzer/main.py \
 ## Parameters
 
 ### Algorithm Selection
-- `--algorithm collaborative` - Use Collaborative Diversity Engine
+- `--algorithm divfuzz` - Use divfuzz Diversity Engine
 
 ### Diversity Parameters
 - `--diversity-weight <float>` - Weight for diversity in fitness calculation (default: 0.3)
@@ -92,7 +92,7 @@ python3 fuzzer/main.py \
 ### Evolution Loop
 
 1. **Execute Population**: Run all individuals and collect coverage data
-2. **Calculate Collaborative Fitness**: 
+2. **Calculate divfuzz Fitness**: 
    - Compute individual fitness (branch coverage)
    - Add unique contribution bonus
    - Add complementarity bonus
@@ -123,7 +123,7 @@ python3 fuzzer/main.py \
 - Unique branches: Branches only this individual covers
 - Complementarity: Branches covered by <30% of population
 
-## When to Use Collaborative Engine
+## When to Use divfuzz Engine
 
 ### Best For:
 - Complex contracts with many execution paths
@@ -134,11 +134,11 @@ python3 fuzzer/main.py \
 
 ### Compared to GA:
 - **GA**: Fast convergence, may miss rare paths
-- **Collaborative**: Slower but more thorough, better diversity
+- **divfuzz**: Slower but more thorough, better diversity
 
 ### Compared to PSO:
 - **PSO**: Good for continuous optimization
-- **Collaborative**: Better for discrete test case generation
+- **divfuzz**: Better for discrete test case generation
 
 ## Example Scenarios
 
@@ -148,7 +148,7 @@ python3 fuzzer/main.py \
 python main.py \
   --source complex_contract.sol \
   --contract ComplexContract \
-  --algorithm collaborative \
+  --algorithm divfuzz \
   --diversity-weight 0.5 \
   --novelty-threshold 0.7 \
   -g 100 \
@@ -161,7 +161,7 @@ python main.py \
 python main.py \
   --source contract.sol \
   --contract MyContract \
-  --algorithm collaborative \
+  --algorithm divfuzz \
   --diversity-weight 0.3 \
   --novelty-threshold 0.5 \
   -g 50 \
@@ -174,7 +174,7 @@ python main.py \
 python main.py \
   --source contract.sol \
   --contract MyContract \
-  --algorithm collaborative \
+  --algorithm divfuzz \
   --diversity-weight 0.2 \
   -g 30 \
   -n 16 \
@@ -189,8 +189,8 @@ python main.py \
 Generation 1/50 | Best Fitness: 15.20 | Avg Fitness: 8.45 | Diversity: 0.623 | Coverage: 42 | Time: 2.31s
 ```
 
-- **Best Fitness**: Highest collaborative fitness in population
-- **Avg Fitness**: Average collaborative fitness
+- **Best Fitness**: Highest divfuzz fitness in population
+- **Avg Fitness**: Average divfuzz fitness
 - **Diversity**: Population diversity score (0-1, higher is more diverse)
 - **Coverage**: Total unique branches covered
 - **Time**: Generation execution time

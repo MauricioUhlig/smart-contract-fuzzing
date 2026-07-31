@@ -170,7 +170,7 @@ def create_conference_style_plots_with_std(df: pd.DataFrame, smooth_df: pd.DataF
     
     # Enhanced color palette for algorithms
     algorithm_colors = {
-        'collaborative': '#000000',  # Blue
+        'divfuzz': '#000000',  # Blue
         'confuzzius': '#808080',     # Orange
 
         'default': '#999999'      # Gray for others
@@ -219,7 +219,7 @@ def _plot_code_coverage_with_std(ax, smooth_df, algorithm_colors, max_time):
         
         # Get statistics
         final_mean = algorithm_data['mean'].iloc[-1]
-        label= '{}'.format(algorithm if algorithm != "collaborative" else "DivFuzz")
+        label= '{}'.format(algorithm if algorithm != "divfuzz" else "DivFuzz")
         label= '{}'.format(label if label != "confuzzius" else "Confuzzius")
         # Plot mean line
         ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
@@ -323,7 +323,7 @@ def _create_contract_size_plots_with_std(df, output_dir, algorithm_colors, max_t
             
             # Get statistics
             final_mean = algorithm_data['mean'].iloc[-1]
-            label= '{}'.format(algorithm if algorithm != "collaborative" else "DivFuzz")
+            label= '{}'.format(algorithm if algorithm != "divfuzz" else "DivFuzz")
             label= '{}'.format(label if label != "confuzzius" else "Confuzzius")
             # Plot mean line
             ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
@@ -391,7 +391,7 @@ def _create_detailed_coverage_plots_with_std(smooth_data, output_dir, algorithm_
             # Get statistics
             final_mean = algorithm_data['mean'].iloc[-1]
             label = '{}'.format(
-                algorithm if algorithm != "collaborative" else "DivFuzz"
+                algorithm if algorithm != "divfuzz" else "DivFuzz"
             )
             label= '{}'.format(label if label != "confuzzius" else "Confuzzius")
             ax.plot(algorithm_data['time_elapsed'], algorithm_data['mean'],
