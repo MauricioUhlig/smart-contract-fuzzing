@@ -164,7 +164,7 @@ class Fuzzer:
 
         if self.args.algorithm == 'divfuzz':
             # Create divfuzz Diversity Engine
-            engine = divfuzzEngine(
+            engine = DivFuzzEngine(
                 population=population,
                 generator=generator,
                 selection=selection,
