@@ -9,6 +9,7 @@ import solcx
 import random
 import logging
 import argparse
+import datetime
 
 from eth_utils import encode_hex, decode_hex, to_canonical_address
 from z3 import Solver
@@ -201,10 +202,20 @@ class Fuzzer:
         self.instrumented_evm.reset()
 
 def main():
-    print_logo()
     args = launch_argument_parser()
-
+    
+    log_filename = f"{args.results}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    logging.basicConfig(
+        level=logging.DEBUG,       
+        format='%(asctime)s | %(name)-10s | %(levelname)-8s | %(message)s',
+        handlers=[
+            logging.FileHandler(log_filename, mode='w'),  # save file
+            logging.StreamHandler()                        # show on console
+        ]
+    )
+    
     logger = initialize_logger("Main    ")
+    print_logo(logger)
 
     # Check if contract has already been analyzed
     if args.results and os.path.exists(args.results):
@@ -429,16 +440,16 @@ def launch_argument_parser():
 
     return args
 
-def print_logo():
-    print("")
-    print(" ██████████    ███              ███████████                                 ")
-    print("░░███░░░░███  ░░░              ░░███░░░░░░█                                 ")
-    print(" ░███   ░░███ ████  █████ █████ ░███   █ ░  █████ ████  █████████  █████████")
-    print(" ░███    ░███░░███ ░░███ ░░███  ░███████   ░░███ ░███  ░█░░░░███  ░█░░░░███ ")
-    print(" ░███    ░███ ░███  ░███  ░███  ░███░░░█    ░███ ░███  ░   ███░   ░   ███░  ")
-    print(" ░███    ███  ░███  ░░███ ███   ░███  ░     ░███ ░███    ███░   █   ███░   █")
-    print(" ██████████   █████  ░░█████    █████       ░░████████  █████████  █████████")
-    print("░░░░░░░░░░   ░░░░░    ░░░░░    ░░░░░         ░░░░░░░░  ░░░░░░░░░  ░░░░░░░░░ ")
+def print_logo(logger):
+    #print("")
+    logger.info(" ██████████    ███              ███████████                                 ")
+    logger.info("░░███░░░░███  ░░░              ░░███░░░░░░█                                 ")
+    logger.info(" ░███   ░░███ ████  █████ █████ ░███   █ ░  █████ ████  █████████  █████████")
+    logger.info(" ░███    ░███░░███ ░░███ ░░███  ░███████   ░░███ ░███  ░█░░░░███  ░█░░░░███ ")
+    logger.info(" ░███    ░███ ░███  ░███  ░███  ░███░░░█    ░███ ░███  ░   ███░   ░   ███░  ")
+    logger.info(" ░███    ███  ░███  ░░███ ███   ░███  ░     ░███ ░███    ███░   █   ███░   █")
+    logger.info(" ██████████   █████  ░░█████    █████       ░░████████  █████████  █████████")
+    logger.info("░░░░░░░░░░   ░░░░░    ░░░░░    ░░░░░         ░░░░░░░░  ░░░░░░░░░  ░░░░░░░░░ ")
     print("")                                                                   
 
 if '__main__' == __name__:
