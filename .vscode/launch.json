@@ -30,13 +30,15 @@
                 "--source", "${workspaceFolder}/${input:contractFile}",
                 "--contract", "${input:contractName}",
                 "--algorithm", "divfuzz",
-                "--generations", "10",
-                "--population-size", "20",
+                "--generations", "20",
+                "--population-size", "40",
                 "--probability-crossover", "0.8",
                 "--probability-mutation", "0.35",
                 "--solc", "v0.8.30",
                 "--evm", "byzantium",
                 "-r", "${workspaceFolder}/results/divfuzz",
+                "--seed", "0.813595275750147",
+                "--max-symbolic-execution", "5",
 
                 "--diversity", "1"
             ]
