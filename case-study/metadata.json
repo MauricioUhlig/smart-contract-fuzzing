@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "compiler_target": "Solidity ^0.8.20",
+  "contracts": [
+    {
+      "contract_id": "withdrawal-contract-a-v1",
+      "blinded_label": "ContractA",
+      "path": "case-study/contracts/ContractA/WithdrawalVault.sol",
+      "sha256": "ed0aee34ed5048d40fa45676ce4ecd859bad2c0ed14e31a06ad46eadf3aedc59",
+      "contract_name": "WithdrawalVault",
+      "interface": [
+        "deposit()",
+        "withdraw()",
+        "balanceOf(address)",
+        "vaultBalance()"
+      ]
+    },
+    {
+      "contract_id": "withdrawal-contract-b-v1",
+      "blinded_label": "ContractB",
+      "path": "case-study/contracts/ContractB/WithdrawalVault.sol",
+      "sha256": "ceb6eeeec55abe1af5a9987066744d39e2eeb5c66582413c45e7ab8a8b9b4e47",
+      "contract_name": "WithdrawalVault",
+      "interface": [
+        "deposit()",
+        "withdraw()",
+        "balanceOf(address)",
+        "vaultBalance()"
+      ]
+    }
+  ],
+  "harness": {
+    "path": "case-study/harness/ReentrancyHarness.sol",
+    "sha256": "316ed82a71d4de955a8cf4d2cd0f02dca2f18795724e03b8640cd84c664fe268",
+    "contract_name": "ReentrancyHarness"
+  },
+  "blinding_note": "Do not reveal the coordinator-only ground-truth mapping before the LLM runs are frozen."
+}

@@ -30,11 +30,11 @@
                 "--source", "${workspaceFolder}/${input:contractFile}",
                 "--contract", "${input:contractName}",
                 "--algorithm", "divfuzz",
-                "--generations", "20",
-                "--population-size", "40",
+                "--generations", "10",
+                "--population-size", "20",
                 "--probability-crossover", "0.8",
                 "--probability-mutation", "0.35",
-                "--solc", "v0.4.26",
+                "--solc", "v0.8.30",
                 "--evm", "byzantium",
                 "-r", "${workspaceFolder}/results/divfuzz",
 
@@ -129,20 +129,17 @@
             "type": "pickString",
             "description": "Select contract file:",
             "options": [
-                "examples/RemiCoin/contracts/RemiCoin.sol",
-                "examples/TokenSale/contracts/TokenSale.sol",
-                "examples/ILF/crowdsale.sol"
+                "case-study/contracts/ContractA/WithdrawalVault.sol",
+                "case-study/contracts/ContractB/WithdrawalVault.sol"
             ],
-            "default": "examples/RemiCoin/contracts/RemiCoin.sol"
+            "default": "case-study/contracts/ContractA/WithdrawalVault.sol"
         },
         {
             "id": "contractName",
             "type": "pickString",
             "description": "Enter the contract name:",
             "options": [
-                "RemiCoin",
-                "TokenSale",
-                "Crowdsale"
+                "WithdrawalVault",
             ],
             "default": "RemiCoin"
         },
