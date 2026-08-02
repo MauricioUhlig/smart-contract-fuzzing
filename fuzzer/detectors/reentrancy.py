@@ -33,11 +33,11 @@ class ReentrancyDetector():
             # Persist the SSTORE record for future CALL checks
             self.sstores[storage_index] = current_instruction["pc"], transaction_index
 
-            # If a CALL happened BEFORE this SSTORE, it is a TRUE POSITIVE (vulnerable)
+            # If a CALL happened BEFORE this SSTORE for the same transaction, it is a TRUE POSITIVE (vulnerable)
             if tainted_record and tainted_record.stack and tainted_record.stack[-1]:
                 if self.calls and storage_index in self.sloads:
                     for pc, index in self.calls:
-                        if pc < current_instruction["pc"]:
+                        if pc < current_instruction["pc"] and index == transaction_index:
                             return pc, index
 
         # 3. CHECK EXTERNAL CALLS (CALL) AND FILTER OUT FALSE POSITIVES
